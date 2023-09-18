@@ -46,7 +46,9 @@ namespace WindowsFormsApp1
             this.addrTextBox = new System.Windows.Forms.TextBox();
             this.submitButton = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.UpdateButton = new System.Windows.Forms.Button();
+            this.DeleteButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -62,7 +64,7 @@ namespace WindowsFormsApp1
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(776, 426);
+            this.tabControl1.Size = new System.Drawing.Size(745, 410);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -72,7 +74,7 @@ namespace WindowsFormsApp1
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(768, 400);
+            this.tabPage1.Size = new System.Drawing.Size(737, 384);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "정보 입력";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -94,7 +96,7 @@ namespace WindowsFormsApp1
             this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.userIDTextBox, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.addrTextBox, 1, 3);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(49, 44);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(21, 35);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 6;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
@@ -105,7 +107,6 @@ namespace WindowsFormsApp1
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(686, 301);
             this.tableLayoutPanel1.TabIndex = 1;
-            this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint);
             // 
             // heightTextBox
             // 
@@ -239,7 +240,7 @@ namespace WindowsFormsApp1
             this.submitButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.submitButton.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.submitButton.ForeColor = System.Drawing.Color.Black;
-            this.submitButton.Location = new System.Drawing.Point(647, 351);
+            this.submitButton.Location = new System.Drawing.Point(619, 342);
             this.submitButton.Name = "submitButton";
             this.submitButton.Size = new System.Drawing.Size(85, 33);
             this.submitButton.TabIndex = 0;
@@ -249,41 +250,66 @@ namespace WindowsFormsApp1
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.button1);
+            this.tabPage2.BackColor = System.Drawing.Color.LightSkyBlue;
+            this.tabPage2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage2.Controls.Add(this.label2);
+            this.tabPage2.Controls.Add(this.UpdateButton);
+            this.tabPage2.Controls.Add(this.DeleteButton);
             this.tabPage2.Controls.Add(this.dataGridView1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(768, 400);
+            this.tabPage2.Size = new System.Drawing.Size(737, 384);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "유저테이블";
-            this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // label2
             // 
-            this.button1.Font = new System.Drawing.Font("굴림", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.button1.Location = new System.Drawing.Point(599, 6);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(163, 30);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "테이블 출력";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("휴먼둥근헤드라인", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label2.Location = new System.Drawing.Point(6, 1);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(232, 39);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "User List";
+            // 
+            // UpdateButton
+            // 
+            this.UpdateButton.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.UpdateButton.Location = new System.Drawing.Point(604, 4);
+            this.UpdateButton.Name = "UpdateButton";
+            this.UpdateButton.Size = new System.Drawing.Size(123, 34);
+            this.UpdateButton.TabIndex = 2;
+            this.UpdateButton.Text = "Save";
+            this.UpdateButton.UseVisualStyleBackColor = true;
+            this.UpdateButton.Click += new System.EventHandler(this.UpdateButton_Click);
+            // 
+            // DeleteButton
+            // 
+            this.DeleteButton.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.DeleteButton.Location = new System.Drawing.Point(475, 4);
+            this.DeleteButton.Name = "DeleteButton";
+            this.DeleteButton.Size = new System.Drawing.Size(123, 34);
+            this.DeleteButton.TabIndex = 1;
+            this.DeleteButton.Text = "Delete";
+            this.DeleteButton.UseVisualStyleBackColor = true;
+            this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
             // 
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 0);
+            this.dataGridView1.GridColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.dataGridView1.Location = new System.Drawing.Point(1, 41);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(767, 399);
+            this.dataGridView1.Size = new System.Drawing.Size(731, 337);
             this.dataGridView1.TabIndex = 0;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(759, 426);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
             this.Text = "회원 정보 관리 프로그램";
@@ -292,6 +318,7 @@ namespace WindowsFormsApp1
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 
@@ -317,7 +344,9 @@ namespace WindowsFormsApp1
         private System.Windows.Forms.TextBox birthYearTextBox;
         private System.Windows.Forms.TextBox addrTextBox;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button UpdateButton;
+        private System.Windows.Forms.Button DeleteButton;
+        private System.Windows.Forms.Label label2;
     }
 }
 
