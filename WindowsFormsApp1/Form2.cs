@@ -5,55 +5,84 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using log4net;
 
 namespace WindowsFormsApp1
 {
     public partial class Form2 : Form
     {
+        private string connString = "Data Source=DESKTOP-PLI5MTR\\SQLEXPRESS;Initial Catalog=TestDB;User ID=sa;Password=1234";
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public Form2()
         {
+            log.Info("Form2 Start");
             InitializeComponent();
         }
 
         private void submitButton_Click(object sender, EventArgs e)
         {
-            //table column declare
-            string userID = TextBox1Value;
-            string name = TextBox2Value;
-            int birthYear = int.Parse(TextBox3Value); // birth to int
-            string addr = TextBox4Value;
-            string mobile1 = TextBox5Value;
-            int height = int.Parse(TextBox6Value); // height to int
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() Start");
+            try
+            {
+                //table column declare
+                string userID = TextBox1Value;
+                string name = TextBox2Value;
+                int birthYear = int.Parse(TextBox3Value); // birth to int
+                string addr = TextBox4Value;
+                string mobile1 = TextBox5Value;
+                int? height = int.Parse(TextBox6Value); // height to int
 
-            //DB connection
-            string connString = "Data Source=DESKTOP-PLI5MTR\\SQLEXPRESS;Initial Catalog=TestDB;User ID=sa;Password=1234";
-            SqlConnection connection = new SqlConnection(connString);
-            connection.Open();
+                //DB connection
+                SqlConnection connection = new SqlConnection(connString);
+                connection.Open();
+                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
-            string sql = "INSERT INTO userTBL (userID, name, birthYear, addr, mobile1, height) " +
-                                 "VALUES (@UserID, @Name, @BirthYear, @Addr, @Mobile1, @Height)";
+                string sql = "INSERT INTO userTBL (userID, name, birthYear, addr, mobile1, height) " +
+                                     "VALUES (@UserID, @Name, @BirthYear, @Addr, @Mobile1, @Height)";
 
-            SqlCommand command = new SqlCommand(sql, connection);
+                SqlCommand command = new SqlCommand(sql, connection);
 
-            //파라미터 추가
-            command.Parameters.AddWithValue("@UserID", userID);
-            command.Parameters.AddWithValue("@Name", name);
-            command.Parameters.AddWithValue("@BirthYear", birthYear);
-            command.Parameters.AddWithValue("@Addr", addr);
-            command.Parameters.AddWithValue("@Mobile1", mobile1);
-            command.Parameters.AddWithValue("@Height", height);
+                //파라미터 추가
+                command.Parameters.AddWithValue("@UserID", userID);
+                command.Parameters.AddWithValue("@Name", name);
+                command.Parameters.AddWithValue("@BirthYear", birthYear);
+                command.Parameters.AddWithValue("@Addr", addr);
+                command.Parameters.AddWithValue("@Mobile1", mobile1);
+                command.Parameters.AddWithValue("@Height", height);
 
-            // 쿼리 실행
-            command.ExecuteNonQuery();
+                // 쿼리 실행
+                command.ExecuteNonQuery();
 
-            MessageBox.Show("데이터가 성공적으로 삽입되었습니다.");
+                MessageBox.Show("데이터가 성공적으로 삽입되었습니다.");
+                log.Info("Data Insert Success");
+                connection.Close();
+                log.Info(MethodBase.GetCurrentMethod().Name + "DB Unconnection");
+                
+                // Form1의 DataGridView를 업데이트
+                Form1 form1 = Application.OpenForms.OfType<Form1>().FirstOrDefault();
+                if (form1 != null)
+                {
+                    log.Info("DataGridView Update");
+                    form1.UpdateDataGridView();
+                }
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
+            }
+            finally
+            {
 
-            connection.Close();
-            this.Close();
+            }
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
         }
+
         // Property textBox value get / set
         public string TextBox1Value
         {
@@ -88,8 +117,23 @@ namespace WindowsFormsApp1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            this.Close();
-            
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() Start");
+            try
+            {
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
+            }
+            finally
+            {
+
+            }
+
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
+
         }
+
     }
 }

@@ -8,53 +8,138 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using log4net;
+using System.Reflection;
 
 namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private string connString = "Data Source=DESKTOP-PLI5MTR\\SQLEXPRESS;Initial Catalog=TestDB;User ID=sa;Password=1234";
+
         public Form1()
         {
+            log.Info("Form1 Start");
             InitializeComponent();
             this.Load += Form_Load;
+
+            this.FormClosing += Form1_FormClosing;
         }
 
+
+        //**데이터 입력받기**
         private void submitButton_Click(object sender, EventArgs e)
         {
-            
-            // 필수 데이터 공백 검사
-            if (String.IsNullOrWhiteSpace(userIDTextBox.Text) &&
-                String.IsNullOrWhiteSpace(nameTextBox.Text) &&
-                String.IsNullOrWhiteSpace(birthYearTextBox.Text) &&
-                String.IsNullOrWhiteSpace(addrTextBox.Text))
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() Start");
+            try
             {
-                MessageBox.Show("필수 입력 양식 입니다.");
+                // 필수 데이터 공백 검사
+                if (String.IsNullOrWhiteSpace(userIDTextBox.Text) ||
+                    String.IsNullOrWhiteSpace(nameTextBox.Text) ||
+                    String.IsNullOrWhiteSpace(birthYearTextBox.Text) ||
+                    String.IsNullOrWhiteSpace(addrTextBox.Text) ||
+                    String.IsNullOrWhiteSpace(mobile1TextBox.Text) ||
+                    String.IsNullOrWhiteSpace(heightTextBox.Text))
+                {
+                    log.Warn(MethodBase.GetCurrentMethod().Name + "() 공백검사 경고");
+                    MessageBox.Show("필수 입력 양식 입니다.");
+                }
+                else
+                {
+                    // 데이터 입력 형식 검사
+                    if (!IsValidUserID(userIDTextBox.Text) ||
+                        !IsValidName(nameTextBox.Text) ||
+                        !IsValidBirthYear(birthYearTextBox.Text) ||
+                        !IsValidAddr(addrTextBox.Text) ||
+                        !IsValidMobileNumber(mobile1TextBox.Text) ||
+                        !IsValidHeight(heightTextBox.Text))
+                    {
+                        log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
+                        MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요.");
+                    }
+                    else
+                    {
+                        Form2 f2 = new Form2();
+
+                        f2.TextBox1Value = userIDTextBox.Text;
+                        f2.TextBox2Value = nameTextBox.Text;
+                        f2.TextBox3Value = birthYearTextBox.Text;
+                        f2.TextBox4Value = addrTextBox.Text;
+                        f2.TextBox5Value = mobile1TextBox.Text;
+                        f2.TextBox6Value = heightTextBox.Text;
+
+                        log.Debug(MethodBase.GetCurrentMethod().Name + "Submit Insert Data To Form2");
+                        f2.ShowDialog();
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Form2 f2 = new Form2();
-
-                f2.TextBox1Value = userIDTextBox.Text;
-                f2.TextBox2Value = nameTextBox.Text;
-                f2.TextBox3Value = birthYearTextBox.Text;
-                f2.TextBox4Value = addrTextBox.Text;
-                f2.TextBox5Value = mobile1TextBox.Text;
-                f2.TextBox6Value = heightTextBox.Text;
-
-                f2.ShowDialog();
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
             }
-            
-           
+            finally
+            {
+
+            }
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
         }
 
+        // 각 항목에 대한 데이터 형식 검사 메서드를 추가
+        private bool IsValidUserID(string userID)
+        {
+            // userID가 최대 8자리 문자열인지 검사
+            return userID.Length <= 8;
+        }
+
+        private bool IsValidName(string name)
+        {
+            // 이름이 최대 10자리 문자열인지 검사
+            return name.Length <= 10;
+        }
+
+        private bool IsValidBirthYear(string birthYear)
+        {
+            // 출생연도가 4자리 숫자인지 검사
+            int year;
+            return int.TryParse(birthYear, out year) && birthYear.Length == 4;
+        }
+
+        private bool IsValidAddr(string addr)
+        {
+            // 지역이 최대 2자리 문자열인지 검사
+            return addr.Length <= 2;
+        }
+
+        private bool IsValidMobileNumber(string mobileNumber)
+        {
+            // 전화번호가 11자리 숫자인지 검사
+            long number;
+            return long.TryParse(mobileNumber, out number) && mobileNumber.Length == 11;
+        }
+
+        private bool IsValidHeight(string height)
+        {
+            // 키가 숫자인지 검사
+            int value;
+            return int.TryParse(height, out value);
+        }
+
+
+
+
+
+
+        // 프로그램 시작 후 Datagridview 로드
         private void Form_Load(object sender, EventArgs e)
         {
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() Start");
             try
             {
                 SqlConnection connection = new SqlConnection(connString);
                 connection.Open();
+                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
                 string viewQuery = @"SELECT * FROM userTBL";
 
@@ -80,14 +165,16 @@ namespace WindowsFormsApp1
             }
             catch (Exception ex)
             {
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
                 MessageBox.Show(ex.ToString(), "에러!",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-
+        //삭제 버튼 동작 시
         private void DeleteButton_Click(object sender, EventArgs e)
         {
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() Start");
             try
             {
                 // 선택된 행 가져오기
@@ -99,14 +186,15 @@ namespace WindowsFormsApp1
                     using (SqlConnection connection = new SqlConnection(connString))
                     {
                         connection.Open();
-                        
+                        log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
+
                         string userID = selectedRow.Cells["userID"].Value.ToString();
 
                         string deleteQuery = "DELETE FROM userTBL WHERE userID = @userID";
 
                         SqlCommand deleteCommand = new SqlCommand(deleteQuery, connection);
                         deleteCommand.Parameters.AddWithValue("@userID", userID);
-
+                        log.Debug(MethodBase.GetCurrentMethod().Name + "() Delete Success");
                         deleteCommand.ExecuteNonQuery();
                         
                     }
@@ -118,19 +206,27 @@ namespace WindowsFormsApp1
             }
             catch (Exception ex)
             {
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
                 MessageBox.Show(ex.ToString(), "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+
+            }
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
         }
 
 
 
         private void UpdateButton_Click(object sender, EventArgs e)
         {
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() Start");
             try
             {
                 using (SqlConnection connection = new SqlConnection(connString))
                 {
                     connection.Open();
+                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
                     foreach (DataGridViewRow row in dataGridView1.Rows)
                     {
@@ -162,7 +258,61 @@ namespace WindowsFormsApp1
             }
             catch (Exception ex)
             {
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
                 MessageBox.Show(ex.ToString(), "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+
+            }
+
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
+        }
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // 폼이 종료될 때 종료 로깅을 추가
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                // 사용자에 의한 종료인 경우에만 로그 기록
+                log.Info("프로그램이 사용자에 의해 종료되었습니다.");
+            }
+            else
+            {
+                log.Info("프로그램이 강제 종료되었습니다.");
+            }
+        }
+
+        public void UpdateDataGridView()
+        {
+            try
+            {
+                SqlConnection connection = new SqlConnection(connString);
+                connection.Open();
+                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
+                string viewQuery = @"SELECT * FROM userTBL";
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.CommandText = viewQuery;
+                cmd.Connection = connection;
+
+                SqlDataAdapter adapter = new SqlDataAdapter();
+                adapter.SelectCommand = cmd;
+
+                DataSet ds = new System.Data.DataSet();
+                adapter.Fill(ds, "userTBL");
+                
+                dataGridView1.DataSource = ds.Tables["userTBL"];
+                log.Debug(MethodBase.GetCurrentMethod().Name + "Data Rebinding Success");
+                //userID는 수정 불가합니다.
+                dataGridView1.Columns[0].ReadOnly = true;
+                // 첫 번째 열의 배경색을 변경(수정 불가를 표시)
+                dataGridView1.Columns[0].DefaultCellStyle.BackColor = Color.IndianRed;
+            }
+            catch (Exception ex)
+            {
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
+                MessageBox.Show(ex.ToString(), "에러!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
