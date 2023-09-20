@@ -39,40 +39,78 @@ namespace WindowsFormsApp1
                 if (String.IsNullOrWhiteSpace(userIDTextBox.Text) ||
                     String.IsNullOrWhiteSpace(nameTextBox.Text) ||
                     String.IsNullOrWhiteSpace(birthYearTextBox.Text) ||
-                    String.IsNullOrWhiteSpace(addrTextBox.Text) ||
-                    String.IsNullOrWhiteSpace(mobile1TextBox.Text) ||
-                    String.IsNullOrWhiteSpace(heightTextBox.Text))
+                    String.IsNullOrWhiteSpace(addrTextBox.Text))
                 {
                     log.Warn(MethodBase.GetCurrentMethod().Name + "() 공백검사 경고");
                     MessageBox.Show("필수 입력 양식 입니다.");
                 }
+                
                 else
                 {
-                    // 데이터 입력 형식 검사
-                    if (!IsValidUserID(userIDTextBox.Text) ||
-                        !IsValidName(nameTextBox.Text) ||
-                        !IsValidBirthYear(birthYearTextBox.Text) ||
-                        !IsValidAddr(addrTextBox.Text) ||
-                        !IsValidMobileNumber(mobile1TextBox.Text) ||
-                        !IsValidHeight(heightTextBox.Text))
+                    //if 데이터 모두 채워져 있어??
+                    //than 유효성 검사 모두
+                    if (!String.IsNullOrWhiteSpace(userIDTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(nameTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(birthYearTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(addrTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(mobile1TextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(heightTextBox.Text)) 
                     {
-                        log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
-                        MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요.");
+                        // 데이터 입력 형식 검사
+                        if (!IsValidUserID(userIDTextBox.Text) ||
+                            !IsValidName(nameTextBox.Text) ||
+                            !IsValidBirthYear(birthYearTextBox.Text) ||
+                            !IsValidAddr(addrTextBox.Text) ||
+                            !IsValidMobileNumber(mobile1TextBox.Text) ||
+                            !IsValidHeight(heightTextBox.Text))
+                        {
+                            log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
+                            MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요. \n(모두 채워져 있는 경우)");
+                        }
+                        else
+                        {
+                            Form2 f2 = new Form2();
+
+                            f2.TextBox1Value = userIDTextBox.Text;
+                            f2.TextBox2Value = nameTextBox.Text;
+                            f2.TextBox3Value = birthYearTextBox.Text;
+                            f2.TextBox4Value = addrTextBox.Text;
+                            f2.TextBox5Value = mobile1TextBox.Text;
+                            f2.TextBox6Value = heightTextBox.Text;
+
+                            log.Debug(MethodBase.GetCurrentMethod().Name + "Submit Insert Data To Form2");
+                            f2.ShowDialog();
+                        }
                     }
+                    //else 필수항목만 채워져있어??
+                    //than 필수 항목만 검사
                     else
                     {
-                        Form2 f2 = new Form2();
+                        // 데이터 입력 형식 검사
+                        if (!IsValidUserID(userIDTextBox.Text) ||
+                            !IsValidName(nameTextBox.Text) ||
+                            !IsValidBirthYear(birthYearTextBox.Text) ||
+                            !IsValidAddr(addrTextBox.Text))
+                        {
+                            log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
+                            MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요.");
+                        }
+                        else
+                        {
+                            Form2 f2 = new Form2();
 
-                        f2.TextBox1Value = userIDTextBox.Text;
-                        f2.TextBox2Value = nameTextBox.Text;
-                        f2.TextBox3Value = birthYearTextBox.Text;
-                        f2.TextBox4Value = addrTextBox.Text;
-                        f2.TextBox5Value = mobile1TextBox.Text;
-                        f2.TextBox6Value = heightTextBox.Text;
+                            f2.TextBox1Value = userIDTextBox.Text;
+                            f2.TextBox2Value = nameTextBox.Text;
+                            f2.TextBox3Value = birthYearTextBox.Text;
+                            f2.TextBox4Value = addrTextBox.Text;
+                            f2.TextBox5Value = "null";
+                            f2.TextBox6Value = "0";
 
-                        log.Debug(MethodBase.GetCurrentMethod().Name + "Submit Insert Data To Form2");
-                        f2.ShowDialog();
+                            log.Debug(MethodBase.GetCurrentMethod().Name + "Submit Insert Data To Form2");
+                            f2.ShowDialog();
+                        }
                     }
+
                 }
             }
             catch (Exception ex)
@@ -228,30 +266,32 @@ namespace WindowsFormsApp1
                     connection.Open();
                     log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
-                    foreach (DataGridViewRow row in dataGridView1.Rows)
+
+                    // 선택된 행 가져오기
+                    DataGridViewRow selectedRow = dataGridView1.CurrentRow;
+
+                    if (selectedRow.Cells["userID"].Value != null && selectedRow.Cells["userID"].Value.ToString() != "")
                     {
-                        if (row.Cells["userID"].Value != null && row.Cells["userID"].Value.ToString() != "")
-                        {
-                            string userID = row.Cells["userID"].Value.ToString();
-                            string newName = row.Cells["name"].Value.ToString();
-                            int newBirthYear = Convert.ToInt32(row.Cells["birthYear"].Value);
-                            string newAddr = row.Cells["addr"].Value.ToString();
-                            string newmobile1 = row.Cells["mobile1"].Value.ToString();
-                            int newheight = Convert.ToInt32(row.Cells["height"].Value);
-                            // 업데이트 쿼리
-                            string updateQuery = "UPDATE userTBL SET name = @name, birthYear = @birthYear, addr = @addr, mobile1 = @mobile1, height = @height WHERE userID = @userID";
+                        string userID = selectedRow.Cells["userID"].Value.ToString();
+                        string newName = selectedRow.Cells["name"].Value.ToString();
+                        int newBirthYear = Convert.ToInt32(selectedRow.Cells["birthYear"].Value);
+                        string newAddr = selectedRow.Cells["addr"].Value.ToString();
+                        string newmobile1 = selectedRow.Cells["mobile1"].Value.ToString();
+                        int newheight = Convert.ToInt32(selectedRow.Cells["height"].Value);
+                        // 업데이트 쿼리
+                        string updateQuery = "UPDATE userTBL SET name = @name, birthYear = @birthYear, addr = @addr, mobile1 = @mobile1, height = @height WHERE userID = @userID";
 
-                            SqlCommand updateCommand = new SqlCommand(updateQuery, connection);
-                            updateCommand.Parameters.AddWithValue("@userID", userID);
-                            updateCommand.Parameters.AddWithValue("@name", newName);
-                            updateCommand.Parameters.AddWithValue("@birthYear", newBirthYear);
-                            updateCommand.Parameters.AddWithValue("@addr", newAddr);
-                            updateCommand.Parameters.AddWithValue("@mobile1", newmobile1);
-                            updateCommand.Parameters.AddWithValue("@height", newheight);
+                        SqlCommand updateCommand = new SqlCommand(updateQuery, connection);
+                        updateCommand.Parameters.AddWithValue("@userID", userID);
+                        updateCommand.Parameters.AddWithValue("@name", newName);
+                        updateCommand.Parameters.AddWithValue("@birthYear", newBirthYear);
+                        updateCommand.Parameters.AddWithValue("@addr", newAddr);
+                        updateCommand.Parameters.AddWithValue("@mobile1", newmobile1);
+                        updateCommand.Parameters.AddWithValue("@height", newheight);
 
-                            updateCommand.ExecuteNonQuery();
-                        }
+                        updateCommand.ExecuteNonQuery();
                     }
+
 
                     MessageBox.Show("변경 사항이 데이터베이스에 저장되었습니다.");
                 }

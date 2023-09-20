@@ -75,6 +75,7 @@ namespace WindowsFormsApp1
             catch (Exception ex)
             {
                 log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
+                MessageBox.Show("중복된 ID 입니다.");
             }
             finally
             {
@@ -83,6 +84,7 @@ namespace WindowsFormsApp1
             log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
         }
 
+        
         // Property textBox value get / set
         public string TextBox1Value
         {
