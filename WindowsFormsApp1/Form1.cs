@@ -44,143 +44,52 @@ namespace WindowsFormsApp1
                 {
                     log.Warn(MethodBase.GetCurrentMethod().Name + "() 공백검사 경고");
                     MessageBox.Show("필수 입력 양식 입니다.");
+                    return; // 필수 데이터가 비어있으면 더 이상 진행하지 않고 종료
                 }
 
-                else
+                // 데이터 입력 형식 검사
+                bool isValidData = IsValidUserID(userIDTextBox.Text) &&
+                    IsValidName(nameTextBox.Text) &&
+                    IsValidBirthYear(birthYearTextBox.Text) &&
+                    IsValidAddr(addrTextBox.Text);
+
+                if (!isValidData)
                 {
-                    //*********************************
-                    // A:필수 항목, B:전화번호,  C:키
-                    //*********************************
-                    //if A,B,C 
-                    //than 유효성 검사 모두
-                    if (!String.IsNullOrWhiteSpace(userIDTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(nameTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(birthYearTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(addrTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(mobile1TextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(heightTextBox.Text))
-                    {
-                        // 데이터 입력 형식 검사
-                        if (!IsValidUserID(userIDTextBox.Text) ||
-                            !IsValidName(nameTextBox.Text) ||
-                            !IsValidBirthYear(birthYearTextBox.Text) ||
-                            !IsValidAddr(addrTextBox.Text) ||
-                            !IsValidMobileNumber(mobile1TextBox.Text) ||
-                            !IsValidHeight(heightTextBox.Text))
-                        {
-                            log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
-                            MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요. \n(모두 채워져 있는 경우)");
-                        }
-                        else
-                        {
-                            Form2 f2 = new Form2();
-
-                            f2.TextBox1Value = userIDTextBox.Text;
-                            f2.TextBox2Value = nameTextBox.Text;
-                            f2.TextBox3Value = birthYearTextBox.Text;
-                            f2.TextBox4Value = addrTextBox.Text;
-                            f2.TextBox5Value = mobile1TextBox.Text;
-                            f2.TextBox6Value = heightTextBox.Text;
-
-                            log.Debug(MethodBase.GetCurrentMethod().Name + "Submit Insert Data To Form2");
-                            f2.ShowDialog();
-                        }
-                    }
-                    // if A,B
-
-                    else if (!String.IsNullOrWhiteSpace(userIDTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(nameTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(birthYearTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(addrTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(mobile1TextBox.Text))
-                    {
-                        // 데이터 입력 형식 검사
-                        if (!IsValidUserID(userIDTextBox.Text) ||
-                            !IsValidName(nameTextBox.Text) ||
-                            !IsValidBirthYear(birthYearTextBox.Text) ||
-                            !IsValidAddr(addrTextBox.Text) ||
-                            !IsValidMobileNumber(mobile1TextBox.Text))
-                        {
-                            log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
-                            MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요. \n(필수항목과 전화번호만 채워진 경우)");
-                        }
-                        else
-                        {
-                            Form2 f2 = new Form2();
-
-                            f2.TextBox1Value = userIDTextBox.Text;
-                            f2.TextBox2Value = nameTextBox.Text;
-                            f2.TextBox3Value = birthYearTextBox.Text;
-                            f2.TextBox4Value = addrTextBox.Text;
-                            f2.TextBox5Value = mobile1TextBox.Text;
-                            f2.TextBox6Value = "0";
-
-                            log.Debug(MethodBase.GetCurrentMethod().Name + "Submit Insert Data To Form2");
-                            f2.ShowDialog();
-                        }
-                    }
-                    //if A,C
-                    else if (!String.IsNullOrWhiteSpace(userIDTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(nameTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(birthYearTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(addrTextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(heightTextBox.Text))
-                    {
-                        // 데이터 입력 형식 검사
-                        if (!IsValidUserID(userIDTextBox.Text) ||
-                            !IsValidName(nameTextBox.Text) ||
-                            !IsValidBirthYear(birthYearTextBox.Text) ||
-                            !IsValidAddr(addrTextBox.Text) ||
-                            !IsValidHeight(heightTextBox.Text))
-                        {
-                            log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
-                            MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요. \n(필수항목과 키만 채워진 경우)");
-                        }
-                        else
-                        {
-                            Form2 f2 = new Form2();
-
-                            f2.TextBox1Value = userIDTextBox.Text;
-                            f2.TextBox2Value = nameTextBox.Text;
-                            f2.TextBox3Value = birthYearTextBox.Text;
-                            f2.TextBox4Value = addrTextBox.Text;
-                            f2.TextBox5Value = null;
-                            f2.TextBox6Value = heightTextBox.Text;
-
-                            log.Debug(MethodBase.GetCurrentMethod().Name + "Submit Insert Data To Form2");
-                            f2.ShowDialog();
-                        }
-                    }
-                    //else A
-                    //than 필수 항목만 검사
-                    else
-                    {
-                        // 데이터 입력 형식 검사
-                        if (!IsValidUserID(userIDTextBox.Text) ||
-                            !IsValidName(nameTextBox.Text) ||
-                            !IsValidBirthYear(birthYearTextBox.Text) ||
-                            !IsValidAddr(addrTextBox.Text))
-                        {
-                            log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
-                            MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요. \n(필수항목만 채워진 경우)");
-                        }
-                        else
-                        {
-                            Form2 f2 = new Form2();
-
-                            f2.TextBox1Value = userIDTextBox.Text;
-                            f2.TextBox2Value = nameTextBox.Text;
-                            f2.TextBox3Value = birthYearTextBox.Text;
-                            f2.TextBox4Value = addrTextBox.Text;
-                            f2.TextBox5Value = "null";
-                            f2.TextBox6Value = "0";
-
-                            log.Debug(MethodBase.GetCurrentMethod().Name + "Submit Insert Data To Form2");
-                            f2.ShowDialog();
-                        }
-                    }
-
+                    log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
+                    MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요.");
+                    return; // 데이터 형식이 올바르지 않으면 종료
                 }
+
+                string mobile1 = mobile1TextBox.Text.Trim();
+                string height = heightTextBox.Text.Trim();
+
+                // 전화번호 데이터 형식 검사
+                if (!String.IsNullOrWhiteSpace(mobile1) && !IsValidMobileNumber(mobile1))
+                {
+                    log.Warn(MethodBase.GetCurrentMethod().Name + "() 전화번호 데이터 입력 형식 경고");
+                    MessageBox.Show("전화번호의 입력 형식이 올바르지 않습니다.");
+                    return; // 전화번호 형식이 올바르지 않으면 종료
+                }
+
+                // 키 데이터 형식 검사
+                if (!String.IsNullOrWhiteSpace(height) && !IsValidHeight(height))
+                {
+                    log.Warn(MethodBase.GetCurrentMethod().Name + "() 키 데이터 입력 형식 경고");
+                    MessageBox.Show("키의 입력 형식이 올바르지 않습니다.");
+                    return; // 키 형식이 올바르지 않으면 종료
+                }
+
+                Form2 f2 = new Form2();
+
+                f2.TextBox1Value = userIDTextBox.Text;
+                f2.TextBox2Value = nameTextBox.Text;
+                f2.TextBox3Value = birthYearTextBox.Text;
+                f2.TextBox4Value = addrTextBox.Text;
+                f2.TextBox5Value = String.IsNullOrWhiteSpace(mobile1) ? "null" : mobile1;
+                f2.TextBox6Value = String.IsNullOrWhiteSpace(height) ? "0" : height;
+
+                log.Debug(MethodBase.GetCurrentMethod().Name + "Submit Insert Data To Form2");
+                f2.ShowDialog();
             }
             catch (Exception ex)
             {
@@ -192,6 +101,8 @@ namespace WindowsFormsApp1
             }
             log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
         }
+
+
 
         // 각 항목에 대한 데이터 형식 검사 메서드를 추가
         private bool IsValidUserID(string userID)
