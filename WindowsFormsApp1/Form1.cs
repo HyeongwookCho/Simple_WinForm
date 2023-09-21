@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using log4net;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace WindowsFormsApp1
 {
@@ -44,17 +45,20 @@ namespace WindowsFormsApp1
                     log.Warn(MethodBase.GetCurrentMethod().Name + "() 공백검사 경고");
                     MessageBox.Show("필수 입력 양식 입니다.");
                 }
-                
+
                 else
                 {
-                    //if 데이터 모두 채워져 있어??
+                    //*********************************
+                    // A:필수 항목, B:전화번호,  C:키
+                    //*********************************
+                    //if A,B,C 
                     //than 유효성 검사 모두
                     if (!String.IsNullOrWhiteSpace(userIDTextBox.Text) &&
                         !String.IsNullOrWhiteSpace(nameTextBox.Text) &&
                         !String.IsNullOrWhiteSpace(birthYearTextBox.Text) &&
                         !String.IsNullOrWhiteSpace(addrTextBox.Text) &&
                         !String.IsNullOrWhiteSpace(mobile1TextBox.Text) &&
-                        !String.IsNullOrWhiteSpace(heightTextBox.Text)) 
+                        !String.IsNullOrWhiteSpace(heightTextBox.Text))
                     {
                         // 데이터 입력 형식 검사
                         if (!IsValidUserID(userIDTextBox.Text) ||
@@ -82,7 +86,72 @@ namespace WindowsFormsApp1
                             f2.ShowDialog();
                         }
                     }
-                    //else 필수항목만 채워져있어??
+                    // if A,B
+
+                    else if (!String.IsNullOrWhiteSpace(userIDTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(nameTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(birthYearTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(addrTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(mobile1TextBox.Text))
+                    {
+                        // 데이터 입력 형식 검사
+                        if (!IsValidUserID(userIDTextBox.Text) ||
+                            !IsValidName(nameTextBox.Text) ||
+                            !IsValidBirthYear(birthYearTextBox.Text) ||
+                            !IsValidAddr(addrTextBox.Text) ||
+                            !IsValidMobileNumber(mobile1TextBox.Text))
+                        {
+                            log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
+                            MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요. \n(필수항목과 전화번호만 채워진 경우)");
+                        }
+                        else
+                        {
+                            Form2 f2 = new Form2();
+
+                            f2.TextBox1Value = userIDTextBox.Text;
+                            f2.TextBox2Value = nameTextBox.Text;
+                            f2.TextBox3Value = birthYearTextBox.Text;
+                            f2.TextBox4Value = addrTextBox.Text;
+                            f2.TextBox5Value = mobile1TextBox.Text;
+                            f2.TextBox6Value = "0";
+
+                            log.Debug(MethodBase.GetCurrentMethod().Name + "Submit Insert Data To Form2");
+                            f2.ShowDialog();
+                        }
+                    }
+                    //if A,C
+                    else if (!String.IsNullOrWhiteSpace(userIDTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(nameTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(birthYearTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(addrTextBox.Text) &&
+                        !String.IsNullOrWhiteSpace(heightTextBox.Text))
+                    {
+                        // 데이터 입력 형식 검사
+                        if (!IsValidUserID(userIDTextBox.Text) ||
+                            !IsValidName(nameTextBox.Text) ||
+                            !IsValidBirthYear(birthYearTextBox.Text) ||
+                            !IsValidAddr(addrTextBox.Text) ||
+                            !IsValidHeight(heightTextBox.Text))
+                        {
+                            log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
+                            MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요. \n(필수항목과 키만 채워진 경우)");
+                        }
+                        else
+                        {
+                            Form2 f2 = new Form2();
+
+                            f2.TextBox1Value = userIDTextBox.Text;
+                            f2.TextBox2Value = nameTextBox.Text;
+                            f2.TextBox3Value = birthYearTextBox.Text;
+                            f2.TextBox4Value = addrTextBox.Text;
+                            f2.TextBox5Value = null;
+                            f2.TextBox6Value = heightTextBox.Text;
+
+                            log.Debug(MethodBase.GetCurrentMethod().Name + "Submit Insert Data To Form2");
+                            f2.ShowDialog();
+                        }
+                    }
+                    //else A
                     //than 필수 항목만 검사
                     else
                     {
@@ -93,7 +162,7 @@ namespace WindowsFormsApp1
                             !IsValidAddr(addrTextBox.Text))
                         {
                             log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
-                            MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요.");
+                            MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요. \n(필수항목만 채워진 경우)");
                         }
                         else
                         {
@@ -127,8 +196,18 @@ namespace WindowsFormsApp1
         // 각 항목에 대한 데이터 형식 검사 메서드를 추가
         private bool IsValidUserID(string userID)
         {
-            // userID가 최대 8자리 문자열인지 검사
-            return userID.Length <= 8;
+            // DB data type은 char 이므로  문자열 내의 모든 문자가 영문자인지 검사
+            bool IsCheck = true;
+
+            Regex engRegex = new Regex(@"[a-zA-Z]");
+            Boolean ismatch = engRegex.IsMatch(userID);
+
+            if (!ismatch)
+            {
+                IsCheck = false;
+            }
+
+            return IsCheck && userID.Length <= 8;
         }
 
         private bool IsValidName(string name)
@@ -147,7 +226,7 @@ namespace WindowsFormsApp1
         private bool IsValidAddr(string addr)
         {
             // 지역이 최대 2자리 문자열인지 검사
-            return addr.Length <= 2;
+            return addr.Length == 2;
         }
 
         private bool IsValidMobileNumber(string mobileNumber)
