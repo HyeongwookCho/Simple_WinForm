@@ -50,6 +50,9 @@ namespace WindowsFormsApp1
             this.UpdateButton = new System.Windows.Forms.Button();
             this.DeleteButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.ToTextFile_Button = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -61,6 +64,8 @@ namespace WindowsFormsApp1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -252,6 +257,7 @@ namespace WindowsFormsApp1
             // 
             this.tabPage2.BackColor = System.Drawing.Color.LightSkyBlue;
             this.tabPage2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage2.Controls.Add(this.ToTextFile_Button);
             this.tabPage2.Controls.Add(this.label2);
             this.tabPage2.Controls.Add(this.UpdateButton);
             this.tabPage2.Controls.Add(this.DeleteButton);
@@ -266,10 +272,10 @@ namespace WindowsFormsApp1
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("휴먼둥근헤드라인", 27.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label2.Location = new System.Drawing.Point(6, 1);
+            this.label2.Font = new System.Drawing.Font("휴먼둥근헤드라인", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label2.Location = new System.Drawing.Point(6, 4);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(232, 39);
+            this.label2.Size = new System.Drawing.Size(202, 34);
             this.label2.TabIndex = 3;
             this.label2.Text = "User List";
             // 
@@ -304,6 +310,36 @@ namespace WindowsFormsApp1
             this.dataGridView1.RowTemplate.Height = 23;
             this.dataGridView1.Size = new System.Drawing.Size(731, 337);
             this.dataGridView1.TabIndex = 0;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(737, 384);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "테이블 뷰어";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(737, 384);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "로그 뷰어";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // ToTextFile_Button
+            // 
+            this.ToTextFile_Button.Location = new System.Drawing.Point(649, 318);
+            this.ToTextFile_Button.Name = "ToTextFile_Button";
+            this.ToTextFile_Button.Size = new System.Drawing.Size(55, 56);
+            this.ToTextFile_Button.TabIndex = 4;
+            this.ToTextFile_Button.Text = "Export";
+            this.ToTextFile_Button.UseVisualStyleBackColor = true;
+            this.ToTextFile_Button.Click += new System.EventHandler(this.ToTextFile_Button_Click);
             // 
             // Form1
             // 
@@ -347,6 +383,9 @@ namespace WindowsFormsApp1
         private System.Windows.Forms.Button UpdateButton;
         private System.Windows.Forms.Button DeleteButton;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Button ToTextFile_Button;
+        private System.Windows.Forms.TabPage tabPage4;
     }
 }
 

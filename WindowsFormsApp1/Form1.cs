@@ -11,6 +11,9 @@ using System.Windows.Forms;
 using log4net;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.IO;
+using static System.IO.Directory;
+
 
 namespace WindowsFormsApp1
 {
@@ -55,8 +58,12 @@ namespace WindowsFormsApp1
 
                 if (!isValidData)
                 {
-                    log.Warn(MethodBase.GetCurrentMethod().Name + "() 데이터 입력 형식 경고");
-                    MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요.");
+                    log.Warn(MethodBase.GetCurrentMethod().Name + "() 필수 입력 데이터 입력 형식 경고");
+                    MessageBox.Show("입력 형식이 올바르지 않습니다. 각 항목의 형식을 확인해 주세요. \n" +
+                        "사용자ID : 최대 8자의 영문자 \n" +
+                        "이름 : 최대 10자 \n" +
+                        "출생연도 : 4자리 숫자 \n" +
+                        "지역 : 2자리 문자 (ex. 서울, 경기)");
                     return; // 데이터 형식이 올바르지 않으면 종료
                 }
 
@@ -67,7 +74,7 @@ namespace WindowsFormsApp1
                 if (!String.IsNullOrWhiteSpace(mobile1) && !IsValidMobileNumber(mobile1))
                 {
                     log.Warn(MethodBase.GetCurrentMethod().Name + "() 전화번호 데이터 입력 형식 경고");
-                    MessageBox.Show("전화번호의 입력 형식이 올바르지 않습니다.");
+                    MessageBox.Show("전화번호의 입력 형식이 올바르지 않습니다. \n ' - ' 를 제외한 숫자 11자리를 입력해주세요.");
                     return; // 전화번호 형식이 올바르지 않으면 종료
                 }
 
@@ -75,7 +82,7 @@ namespace WindowsFormsApp1
                 if (!String.IsNullOrWhiteSpace(height) && !IsValidHeight(height))
                 {
                     log.Warn(MethodBase.GetCurrentMethod().Name + "() 키 데이터 입력 형식 경고");
-                    MessageBox.Show("키의 입력 형식이 올바르지 않습니다.");
+                    MessageBox.Show("키의 입력 형식이 올바르지 않습니다. 숫자만을 입력해주세요.");
                     return; // 키 형식이 올바르지 않으면 종료
                 }
 
@@ -346,5 +353,68 @@ namespace WindowsFormsApp1
             }
         }
 
+        private void ToTextFile_Button_Click(object sender, EventArgs e)
+        {
+            //파일 저장 위치
+            string dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export";
+
+            // 디렉토리 일자별 구분을 위한 현재 연,월,일 파싱
+
+            DateTime currentDateTime = DateTime.Now;
+
+            string year = currentDateTime.Year.ToString();
+            string month = currentDateTime.Month.ToString();
+            string day = currentDateTime.Day.ToString();
+            string hour = currentDateTime.Hour.ToString();
+            string minute = currentDateTime.Minute.ToString();
+            string second = currentDateTime.Second.ToString();
+
+            string year_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export\" + year;
+            string month_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export\" + year + @"\" + month;
+            string filePath = day + "-" + hour + "-" + minute + ".txt";
+
+            try
+            {
+                //Export 디렉토리 존재 여부
+                if (Exists(dir))
+                {
+                    //year 디렉토리 존재 여부
+                    if (Exists(year_dir))
+                    {
+                        //month 디렉토리 존재 여부
+                        if (Exists(year_dir))
+                        {
+                            // 파일 생성
+                            // foreach datagridview write in text file with Separator
+                            using (StreamWriter writer = new StreamWriter(filePath))
+                            {
+
+                            }
+                        }
+                        else
+                        {
+                            CreateDirectory(month_dir);
+                        }
+                    }
+                    else
+                    {
+                        CreateDirectory(year_dir);
+                    }
+                }
+                else
+                {
+                    CreateDirectory(dir);
+                }
+            }
+            catch
+            {
+
+            }
+            finally
+            {
+
+            }
+            
+        }
     }
 }
