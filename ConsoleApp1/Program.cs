@@ -17,7 +17,7 @@ namespace ConsoleApp1
 
             // 디렉토리 일자별 구분을 위한 현재 연월일 파싱
 
-            DateTime currentDateTime = DateTime.Now;
+            /*DateTime currentDateTime = DateTime.Now;
 
             string year = currentDateTime.Year.ToString();
             string month = currentDateTime.Month.ToString();
@@ -36,8 +36,9 @@ namespace ConsoleApp1
             Console.WriteLine(day);
             Console.WriteLine(hour);
             Console.WriteLine(minute);
-            Console.WriteLine(second);
+            Console.WriteLine(second);*/
 
+            
 
 
 

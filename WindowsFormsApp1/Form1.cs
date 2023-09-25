@@ -172,31 +172,32 @@ namespace WindowsFormsApp1
             log.Debug(MethodBase.GetCurrentMethod().Name + "() Start");
             try
             {
-                SqlConnection connection = new SqlConnection(connString);
-                connection.Open();
-                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
+                using (SqlConnection connection = new SqlConnection(connString))
+                {
+                    connection.Open();
+                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
-                string viewQuery = @"SELECT * FROM userTBL";
+                    string viewQuery = @"SELECT * FROM userTBL";
 
-                SqlCommand cmd = new SqlCommand();
-                cmd.CommandText = viewQuery;
-                cmd.Connection = connection;
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.CommandText = viewQuery;
+                    cmd.Connection = connection;
 
-                SqlDataAdapter adapter = new SqlDataAdapter();
-                adapter.SelectCommand = cmd;
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = cmd;
 
-                DataSet ds = new System.Data.DataSet();
-                adapter.Fill(ds, "userTBL");
-                
-
-                dataGridView1.DataSource = ds.Tables["userTBL"];
-
-                //userID는 수정 불가합니다.
-                dataGridView1.Columns[0].ReadOnly = true;
-                // 첫 번째 열의 배경색을 변경(수정 불가를 표시)
-                dataGridView1.Columns[0].DefaultCellStyle.BackColor = Color.IndianRed;
+                    DataSet ds = new System.Data.DataSet();
+                    adapter.Fill(ds, "userTBL");
 
 
+                    dataGridView1.DataSource = ds.Tables["userTBL"];
+
+                    //userID는 수정 불가합니다.
+                    dataGridView1.Columns[0].ReadOnly = true;
+                    // 첫 번째 열의 배경색을 변경(수정 불가를 표시)
+                    dataGridView1.Columns[0].DefaultCellStyle.BackColor = Color.IndianRed;
+
+                }
             }
             catch (Exception ex)
             {
@@ -362,17 +363,17 @@ namespace WindowsFormsApp1
 
             DateTime currentDateTime = DateTime.Now;
 
-            string year = currentDateTime.Year.ToString();
-            string month = currentDateTime.Month.ToString();
-            string day = currentDateTime.Day.ToString();
-            string hour = currentDateTime.Hour.ToString();
-            string minute = currentDateTime.Minute.ToString();
-            string second = currentDateTime.Second.ToString();
+            string year = currentDateTime.ToString("yyyy");
+            string month = currentDateTime.ToString("MM");
+            string day = currentDateTime.ToString("dd");
+            string hour = currentDateTime.ToString("HH");
+            string minute = currentDateTime.ToString("mm");
+            string second = currentDateTime.ToString("ss");
 
             string year_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export\" + year;
             string month_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export\" + year + @"\" + month;
-            string filePath = day + "-" + hour + "-" + minute + ".txt";
-
+            string filePath = month + "-" + day + "-" + hour + ".txt";
+            string fullFilePath = Path.Combine(month_dir, filePath);
             try
             {
                 //Export 디렉토리 존재 여부
@@ -382,14 +383,51 @@ namespace WindowsFormsApp1
                     if (Exists(year_dir))
                     {
                         //month 디렉토리 존재 여부
-                        if (Exists(year_dir))
+                        if (Exists(month_dir))
                         {
                             // 파일 생성
-                            // foreach datagridview write in text file with Separator
-                            using (StreamWriter writer = new StreamWriter(filePath))
-                            {
 
+                            // foreach datagridview write in text file with Separator\
+
+                            // 파일 크기 검정 메소드
+                            // 근데 만약 동일한 날짜가 이미 존재한다면? 이어쓰기 
+                            // 이어쓰기 하다 10mb 이상이라면? 동일날짜 텍스트파일의 n번째 버전 새로 생성 
+                            
+                            
+                            using (StreamWriter writer = new StreamWriter(fullFilePath, true)) // 이어쓰기
+                            {
+                                StringBuilder sb = new StringBuilder();
+                                using (SqlConnection connection = new SqlConnection(connString))
+                                {
+                                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Operation");
+                                    connection.Open();
+                                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
+                                    SqlCommand cmd = new SqlCommand();
+
+                                    string viewQuery = "SELECT * FROM userTBL;";
+
+                                    cmd.Connection = connection;
+                                    cmd.CommandText = viewQuery;
+
+                                    log.Info(MethodBase.GetCurrentMethod().Name + "DB to Text Operation");
+
+                                    using (SqlDataReader reader = cmd.ExecuteReader())
+                                    {
+                                        while (reader.Read()) //모든 행 읽기
+                                        {
+                                            for (int i = 0; i < reader.FieldCount; i++)
+                                            {
+                                                sb.Append(reader[i].ToString() + "\t"); // 각 컬럼을 \t 구분자와 함께 stringbuilder에 적재
+                                            }
+                                            sb.AppendLine();
+                                        }
+                                    }
+                                }
+                                Console.WriteLine(sb.ToString());
+                                writer.Write(sb.ToString());
+                                log.Info(MethodBase.GetCurrentMethod().Name + "DB to Text Success");
                             }
+                            
                         }
                         else
                         {
@@ -406,15 +444,17 @@ namespace WindowsFormsApp1
                     CreateDirectory(dir);
                 }
             }
-            catch
+            catch(Exception ex)
             {
-
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
+                MessageBox.Show(ex.ToString(), "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
 
             }
-            
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
+
         }
     }
 }
