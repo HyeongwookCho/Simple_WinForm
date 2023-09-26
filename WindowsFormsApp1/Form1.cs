@@ -28,6 +28,16 @@ namespace WindowsFormsApp1
             log.Info("Form1 Start");
             InitializeComponent();
             this.Load += Form_Load;
+            this.Load += log_viewer;
+
+            DateTime currentDateTime = DateTime.Now;
+
+            string year = currentDateTime.ToString("yyyy");
+            string month = currentDateTime.ToString("MM");
+            string day = currentDateTime.ToString("dd");
+            string hour = currentDateTime.ToString("HH");
+            string minute = currentDateTime.ToString("mm");
+            string second = currentDateTime.ToString("ss");
 
             this.FormClosing += Form1_FormClosing;
         }
@@ -320,7 +330,7 @@ namespace WindowsFormsApp1
             }
         }
 
-        public void UpdateDataGridView()
+        private async void UpdateDataGridView()
         {
             try
             {
@@ -358,7 +368,6 @@ namespace WindowsFormsApp1
         {
             //파일 저장 위치
             string dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export";
-
             // 디렉토리 일자별 구분을 위한 현재 연,월,일 파싱
 
             DateTime currentDateTime = DateTime.Now;
@@ -372,8 +381,8 @@ namespace WindowsFormsApp1
 
             string year_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export\" + year;
             string month_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export\" + year + @"\" + month;
-            string filePath = month + "-" + day + "-" + hour + ".txt";
-            string fullFilePath = Path.Combine(month_dir, filePath);
+            string filePathString = $"{year}-{month}-{day}-{hour}-{minute}-{second}-{currentDateTime.Millisecond}.txt";
+            string fullFilePath = Path.Combine(month_dir, filePathString);
             try
             {
                 //Export 디렉토리 존재 여부
@@ -394,12 +403,12 @@ namespace WindowsFormsApp1
                             // 이어쓰기 하다 10mb 이상이라면? 동일날짜 텍스트파일의 n번째 버전 새로 생성 
                             
                             
-                            using (StreamWriter writer = new StreamWriter(fullFilePath, true)) // 이어쓰기
+                            using (StreamWriter writer = new StreamWriter(fullFilePath, false)) // 이어쓰기x
                             {
                                 StringBuilder sb = new StringBuilder();
                                 using (SqlConnection connection = new SqlConnection(connString))
                                 {
-                                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Operation");
+                                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Excecution");
                                     connection.Open();
                                     log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
                                     SqlCommand cmd = new SqlCommand();
@@ -409,7 +418,7 @@ namespace WindowsFormsApp1
                                     cmd.Connection = connection;
                                     cmd.CommandText = viewQuery;
 
-                                    log.Info(MethodBase.GetCurrentMethod().Name + "DB to Text Operation");
+                                    log.Info(MethodBase.GetCurrentMethod().Name + "DB to Text Excecution");
 
                                     using (SqlDataReader reader = cmd.ExecuteReader())
                                     {
@@ -456,5 +465,183 @@ namespace WindowsFormsApp1
             log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {   
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            // 파일 대화 상자 설정
+            openFileDialog.Title = "파일 선택"; // 대화 상자 제목
+            openFileDialog.Filter = "텍스트 파일 (*.txt)|*.txt|모든 파일 (*.*)|*.*"; // 파일 필터
+            openFileDialog.FilterIndex = 1; // 기본으로 선택될 필터 인덱스
+            openFileDialog.RestoreDirectory = true; // 마지막 디렉토리 기억
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                // 사용자가 파일을 선택하고 확인을 누르면 선택한 파일 경로를 가져오기
+                string selectedFilePath = openFileDialog.FileName;
+
+                // 선택한 파일을 읽어온 후 데이터베이스에 삽입
+                try
+                {
+                    log.Debug("찾은 파일의 데이터 읽기 시작");
+                    List<string[]> InsertdataList = new List<string[]>();
+
+                    using (StreamReader reader = new StreamReader(selectedFilePath))
+                    {
+                        string line;
+                        log.Debug("데이터 파싱 시작 및 삽입 시작");
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            // 각 라인을 파싱하여 데이터베이스에 삽입
+                            string[] values = line.Split('\t');
+                            InsertdataList.Add(values); // 리스트에 string[] 삽입
+                        }
+                        log.Debug("데이터 파싱 시작 및 삽입 완료");
+                    }
+                    InsertDataIntoDatabase(InsertdataList);
+                    MessageBox.Show("데이터 삽입 완료");
+                    showDataGrid();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("오류 발생: " + ex.Message, "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void showDataGrid()
+        {
+            DataTable dt = new DataTable(); // 데이터를 담을 DataTable을 생성합니다.
+
+            using (SqlConnection connection = new SqlConnection(connString))
+            {
+                connection.Open();
+
+                string selectQuery = "SELECT * FROM InsertTBL"; // 가져올 데이터를 선택하는 SQL 쿼리를 작성합니다.
+
+                SqlCommand command = new SqlCommand(selectQuery, connection);
+
+                SqlDataAdapter adapter = new SqlDataAdapter(command); // 데이터를 채우기 위한 SqlDataAdapter를 생성합니다.
+
+                adapter.Fill(dt); // 데이터베이스에서 데이터를 가져와 DataTable에 채웁니다.
+            }
+
+            // DataGridView에 DataTable을 바인딩하여 데이터를 표시합니다.
+            dataGridView2.DataSource = dt;
+        }
+
+        // 데이터베이스에 데이터를 삽입하는 메서드
+        private void InsertDataIntoDatabase(List<string[]> InsertdataList)
+        {            
+            
+            using (SqlConnection connection = new SqlConnection(connString))
+            {
+                connection.Open();
+
+                string InsertQuery = "INSERT INTO InsertTBL (userID, name, birthYear, addr, mobile1, height) " +
+                                     "VALUES (@userID, @name, @birthYear, @addr, @mobile1, @height)";
+
+                SqlCommand command = new SqlCommand(InsertQuery, connection);
+
+                //파라미터 추가
+                foreach (var values in InsertdataList)
+                {
+                    command.Parameters.AddWithValue("@userID", values[0]);
+                    command.Parameters.AddWithValue("@name", values[1]);
+                    command.Parameters.AddWithValue("@birthYear", int.Parse(values[2]));
+                    command.Parameters.AddWithValue("@addr", values[3]);
+                    command.Parameters.AddWithValue("@mobile1", values[4]);
+                    command.Parameters.AddWithValue("@height", int.Parse(values[5]));
+
+                    // 쿼리 실행
+                    command.ExecuteNonQuery();
+
+                    //파라미터 초기화
+                    command.Parameters.Clear();
+                }                        
+            }
+        }
+
+        private void log_viewer(object sender, EventArgs e)
+        {
+            try
+            {
+                //로그 뷰어
+                //현재 날짜의 로그 파일 연결
+                //로그 파일 저장 위치
+                string log_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Debug\logs";
+
+                DateTime currentDateTime = DateTime.Now;
+
+                string year = currentDateTime.ToString("yyyy");
+                string month = currentDateTime.ToString("MM");
+                string day = currentDateTime.ToString("dd");
+
+                string year_log_dir = Path.Combine(log_dir, year);
+                string month_log_dir = Path.Combine(year_log_dir, month);
+                string logString = $"{year}-{month}-{day}.log";
+                string fullFilePath = Path.Combine(month_log_dir, logString);
+
+                Console.WriteLine(year_log_dir);
+                Console.WriteLine(month_log_dir);
+                Console.WriteLine(logString);
+                Console.WriteLine(fullFilePath);
+
+                //path.Combine and read
+                //textbox에 모든 string read
+                StringBuilder sb = new StringBuilder();
+
+                if (Exists(log_dir))
+                {
+                    if (Exists(year_log_dir))
+                    {
+                        if (Exists(month_log_dir))
+                        {
+                            if (File.Exists(fullFilePath))
+                            {
+                                using (StreamReader reader = new StreamReader(fullFilePath))
+                                {
+                                    while (reader.ReadLine() != null)
+                                    {
+                                        sb.Append(reader.ReadLine());
+                                    }
+                                }
+                                textBox1.Text = sb.ToString();
+                            }
+                            else
+                            {
+                                MessageBox.Show("로그 파일 찾기 실패");
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("해당 월의 로그가 존재하지 않습니다.");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("해당 연도의 로그가 존재하지 않습니다.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("로그가 존재하지 않습니다.");
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
+                MessageBox.Show(ex.ToString(), "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+
+            }
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
+
+        }
+
+
     }
 }

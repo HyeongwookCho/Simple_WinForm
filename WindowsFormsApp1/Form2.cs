@@ -38,31 +38,31 @@ namespace WindowsFormsApp1
                 int? height = int.Parse(TextBox6Value); // height to int
 
                 //DB connection
-                SqlConnection connection = new SqlConnection(connString);
-                connection.Open();
-                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
+                using(SqlConnection connection = new SqlConnection(connString))
+                {
+                    connection.Open();
+                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
-                string sql = "INSERT INTO userTBL (userID, name, birthYear, addr, mobile1, height) " +
-                                     "VALUES (@UserID, @Name, @BirthYear, @Addr, @Mobile1, @Height)";
+                    string sql = "INSERT INTO userTBL (userID, name, birthYear, addr, mobile1, height) " +
+                                         "VALUES (@UserID, @Name, @BirthYear, @Addr, @Mobile1, @Height)";
 
-                SqlCommand command = new SqlCommand(sql, connection);
+                    SqlCommand command = new SqlCommand(sql, connection);
 
-                //파라미터 추가
-                command.Parameters.AddWithValue("@UserID", userID);
-                command.Parameters.AddWithValue("@Name", name);
-                command.Parameters.AddWithValue("@BirthYear", birthYear);
-                command.Parameters.AddWithValue("@Addr", addr);
-                command.Parameters.AddWithValue("@Mobile1", mobile1);
-                command.Parameters.AddWithValue("@Height", height);
+                    //파라미터 추가
+                    command.Parameters.AddWithValue("@UserID", userID);
+                    command.Parameters.AddWithValue("@Name", name);
+                    command.Parameters.AddWithValue("@BirthYear", birthYear);
+                    command.Parameters.AddWithValue("@Addr", addr);
+                    command.Parameters.AddWithValue("@Mobile1", mobile1);
+                    command.Parameters.AddWithValue("@Height", height);
 
-                // 쿼리 실행
-                command.ExecuteNonQuery();
+                    // 쿼리 실행
+                    command.ExecuteNonQuery();
 
-                MessageBox.Show("데이터가 성공적으로 삽입되었습니다.");
-                log.Info("Data Insert Success");
-                connection.Close();
-                log.Info(MethodBase.GetCurrentMethod().Name + "DB Unconnection");
-                
+                    MessageBox.Show("데이터가 성공적으로 삽입되었습니다.");
+                    log.Info("Data Insert Success");
+                }
+                                
                 // Form1의 DataGridView를 업데이트
                 Form1 form1 = Application.OpenForms.OfType<Form1>().FirstOrDefault();
                 if (form1 != null)
