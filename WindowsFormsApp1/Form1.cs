@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.IO;
 using static System.IO.Directory;
-
+using System.Threading;
 
 namespace WindowsFormsApp1
 {
@@ -28,20 +28,49 @@ namespace WindowsFormsApp1
             log.Info("Form1 Start");
             InitializeComponent();
             this.Load += Form_Load;
-            this.Load += log_viewer;
-
-            DateTime currentDateTime = DateTime.Now;
-
-            string year = currentDateTime.ToString("yyyy");
-            string month = currentDateTime.ToString("MM");
-            string day = currentDateTime.ToString("dd");
-            string hour = currentDateTime.ToString("HH");
-            string minute = currentDateTime.ToString("mm");
-            string second = currentDateTime.ToString("ss");
-
+            
             this.FormClosing += Form1_FormClosing;
         }
+        // 프로그램 시작 후 Datagridview 로드
+        private void Form_Load(object sender, EventArgs e)
+        {
+            log.Debug(MethodBase.GetCurrentMethod().Name + "() Start");
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connString))
+                {
+                    connection.Open();
+                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
+                    string viewQuery = @"SELECT * FROM userTBL";
+
+                    SqlCommand cmd = new SqlCommand();
+                    cmd.CommandText = viewQuery;
+                    cmd.Connection = connection;
+
+                    SqlDataAdapter adapter = new SqlDataAdapter();
+                    adapter.SelectCommand = cmd;
+
+                    DataSet ds = new System.Data.DataSet();
+                    adapter.Fill(ds, "userTBL");
+
+
+                    dataGridView1.DataSource = ds.Tables["userTBL"];
+
+                    //userID는 수정 불가합니다.
+                    dataGridView1.Columns[0].ReadOnly = true;
+                    // 첫 번째 열의 배경색을 변경(수정 불가를 표시)
+                    dataGridView1.Columns[0].DefaultCellStyle.BackColor = Color.IndianRed;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
+                MessageBox.Show(ex.ToString(), "에러!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         //**데이터 입력받기**
         private void submitButton_Click(object sender, EventArgs e)
@@ -171,52 +200,6 @@ namespace WindowsFormsApp1
             return int.TryParse(height, out value);
         }
 
-
-
-
-
-
-        // 프로그램 시작 후 Datagridview 로드
-        private void Form_Load(object sender, EventArgs e)
-        {
-            log.Debug(MethodBase.GetCurrentMethod().Name + "() Start");
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(connString))
-                {
-                    connection.Open();
-                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
-
-                    string viewQuery = @"SELECT * FROM userTBL";
-
-                    SqlCommand cmd = new SqlCommand();
-                    cmd.CommandText = viewQuery;
-                    cmd.Connection = connection;
-
-                    SqlDataAdapter adapter = new SqlDataAdapter();
-                    adapter.SelectCommand = cmd;
-
-                    DataSet ds = new System.Data.DataSet();
-                    adapter.Fill(ds, "userTBL");
-
-
-                    dataGridView1.DataSource = ds.Tables["userTBL"];
-
-                    //userID는 수정 불가합니다.
-                    dataGridView1.Columns[0].ReadOnly = true;
-                    // 첫 번째 열의 배경색을 변경(수정 불가를 표시)
-                    dataGridView1.Columns[0].DefaultCellStyle.BackColor = Color.IndianRed;
-
-                }
-            }
-            catch (Exception ex)
-            {
-                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
-                MessageBox.Show(ex.ToString(), "에러!",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
         //삭제 버튼 동작 시
         private void DeleteButton_Click(object sender, EventArgs e)
         {
@@ -330,7 +313,7 @@ namespace WindowsFormsApp1
             }
         }
 
-        private async void UpdateDataGridView()
+        public void UpdateDataGridView()
         {
             try
             {
@@ -567,6 +550,7 @@ namespace WindowsFormsApp1
         {
             try
             {
+
                 //로그 뷰어
                 //현재 날짜의 로그 파일 연결
                 //로그 파일 저장 위치
@@ -582,16 +566,15 @@ namespace WindowsFormsApp1
                 string month_log_dir = Path.Combine(year_log_dir, month);
                 string logString = $"{year}-{month}-{day}.log";
                 string fullFilePath = Path.Combine(month_log_dir, logString);
-
-                Console.WriteLine(year_log_dir);
-                Console.WriteLine(month_log_dir);
-                Console.WriteLine(logString);
-                Console.WriteLine(fullFilePath);
+                
+                //로깅 중단
+                // 중단 이후의 발생된 로그는 어떻게 하지... 
+                log.Logger.Repository.Shutdown();
 
                 //path.Combine and read
                 //textbox에 모든 string read
                 StringBuilder sb = new StringBuilder();
-
+                
                 if (Exists(log_dir))
                 {
                     if (Exists(year_log_dir))
@@ -604,10 +587,12 @@ namespace WindowsFormsApp1
                                 {
                                     while (reader.ReadLine() != null)
                                     {
-                                        sb.Append(reader.ReadLine());
+                                        sb.AppendLine(reader.ReadLine());
                                     }
+                                    reader.Close();
                                 }
                                 textBox1.Text = sb.ToString();
+                                //log.Logger.Repository.ResetConfiguration();
                             }
                             else
                             {
@@ -628,6 +613,7 @@ namespace WindowsFormsApp1
                 {
                     MessageBox.Show("로그가 존재하지 않습니다.");
                 }
+                
             }
             catch (Exception ex)
             {
@@ -636,12 +622,14 @@ namespace WindowsFormsApp1
             }
             finally
             {
-
             }
             log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
 
         }
 
-
+        private void button2_Click(object sender, EventArgs e)
+        {
+            log_viewer(sender, e);
+        }        
     }
 }
