@@ -57,7 +57,7 @@ namespace WindowsFormsApp1
 
                     dataGridView1.DataSource = ds.Tables["userTBL"];
 
-                    //userID는 수정 불가합니다.
+                    //userID는 수정 불가
                     dataGridView1.Columns[0].ReadOnly = true;
                     // 첫 번째 열의 배경색을 변경(수정 불가를 표시)
                     dataGridView1.Columns[0].DefaultCellStyle.BackColor = Color.IndianRed;
@@ -361,82 +361,69 @@ namespace WindowsFormsApp1
             string hour = currentDateTime.ToString("HH");
             string minute = currentDateTime.ToString("mm");
             string second = currentDateTime.ToString("ss");
+            string milli = currentDateTime.ToString("FFF");
 
             string year_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export\" + year;
             string month_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export\" + year + @"\" + month;
-            string filePathString = $"{year}-{month}-{day}-{hour}-{minute}-{second}-{currentDateTime.Millisecond}.txt";
+            string filePathString = $"{year}-{month}-{day}-{hour}-{minute}-{second}-{milli}.txt";
             string fullFilePath = Path.Combine(month_dir, filePathString);
             try
             {
-                //Export 디렉토리 존재 여부
-                if (Exists(dir))
-                {
-                    //year 디렉토리 존재 여부
-                    if (Exists(year_dir))
-                    {
-                        //month 디렉토리 존재 여부
-                        if (Exists(month_dir))
-                        {
-                            // 파일 생성
-
-                            // foreach datagridview write in text file with Separator\
-
-                            // 파일 크기 검정 메소드
-                            // 근데 만약 동일한 날짜가 이미 존재한다면? 이어쓰기 
-                            // 이어쓰기 하다 10mb 이상이라면? 동일날짜 텍스트파일의 n번째 버전 새로 생성 
-                            
-                            
-                            using (StreamWriter writer = new StreamWriter(fullFilePath, false)) // 이어쓰기x
-                            {
-                                StringBuilder sb = new StringBuilder();
-                                using (SqlConnection connection = new SqlConnection(connString))
-                                {
-                                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Excecution");
-                                    connection.Open();
-                                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
-                                    SqlCommand cmd = new SqlCommand();
-
-                                    string viewQuery = "SELECT * FROM userTBL;";
-
-                                    cmd.Connection = connection;
-                                    cmd.CommandText = viewQuery;
-
-                                    log.Info(MethodBase.GetCurrentMethod().Name + "DB to Text Excecution");
-
-                                    using (SqlDataReader reader = cmd.ExecuteReader())
-                                    {
-                                        while (reader.Read()) //모든 행 읽기
-                                        {
-                                            for (int i = 0; i < reader.FieldCount; i++)
-                                            {
-                                                sb.Append(reader[i].ToString() + "\t"); // 각 컬럼을 \t 구분자와 함께 stringbuilder에 적재
-                                            }
-                                            sb.AppendLine();
-                                        }
-                                    }
-                                }
-                                Console.WriteLine(sb.ToString());
-                                writer.Write(sb.ToString());
-                                log.Info(MethodBase.GetCurrentMethod().Name + "DB to Text Success");
-                            }
-                            
-                        }
-                        else
-                        {
-                            CreateDirectory(month_dir);
-                        }
-                    }
-                    else
-                    {
-                        CreateDirectory(year_dir);
-                    }
-                }
-                else
+                // Export 디렉토리 존재 여부 확인
+                if (!Exists(dir))
                 {
                     CreateDirectory(dir);
                 }
+
+                // year 디렉토리 존재 여부 확인
+                if (!Exists(year_dir))
+                {
+                    CreateDirectory(year_dir);
+                }
+
+                // month 디렉토리 존재 여부 확인
+                if (!Exists(month_dir))
+                {
+                    CreateDirectory(month_dir);
+                }
+
+                // 데이터베이스 연결 및 데이터 추출
+                using (SqlConnection connection = new SqlConnection(connString))
+                {
+                    log.Info(MethodBase.GetCurrentMethod().Name + " DB Connection Execution");
+                    connection.Open();
+                    log.Info(MethodBase.GetCurrentMethod().Name + " DB Connection Success");
+
+                    SqlCommand cmd = new SqlCommand();
+                    string viewQuery = "SELECT * FROM userTBL;";
+                    cmd.Connection = connection;
+                    cmd.CommandText = viewQuery;
+                    log.Info(MethodBase.GetCurrentMethod().Name + " DB to Text Execution");
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        while (reader.Read()) // 모든 행 읽기
+                        {
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                sb.Append(reader[i].ToString() + "\t"); // 각 컬럼을 \t 구분자와 함께 StringBuilder에 추가
+                            }
+                            sb.AppendLine();
+                        }
+                        Console.WriteLine(sb.ToString());
+                        log.Info(MethodBase.GetCurrentMethod().Name + " DB to Text Success");
+
+                        // 파일에 데이터 쓰기 (이어쓰기 없음)
+                        using (StreamWriter writer = new StreamWriter(fullFilePath, false))
+                        {
+                            writer.Write(sb.ToString());
+                        }
+                    }
+                }
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
                 MessageBox.Show(ex.ToString(), "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -495,32 +482,33 @@ namespace WindowsFormsApp1
 
         private void showDataGrid()
         {
-            DataTable dt = new DataTable(); // 데이터를 담을 DataTable을 생성합니다.
-
+            DataTable dt = new DataTable();
             using (SqlConnection connection = new SqlConnection(connString))
             {
+                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Execution");
                 connection.Open();
+                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
-                string selectQuery = "SELECT * FROM InsertTBL"; // 가져올 데이터를 선택하는 SQL 쿼리를 작성합니다.
+                string selectQuery = "SELECT * FROM InsertTBL";
 
                 SqlCommand command = new SqlCommand(selectQuery, connection);
 
-                SqlDataAdapter adapter = new SqlDataAdapter(command); // 데이터를 채우기 위한 SqlDataAdapter를 생성합니다.
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
 
-                adapter.Fill(dt); // 데이터베이스에서 데이터를 가져와 DataTable에 채웁니다.
+                adapter.Fill(dt);
             }
-
-            // DataGridView에 DataTable을 바인딩하여 데이터를 표시합니다.
             dataGridView2.DataSource = dt;
         }
 
-        // 데이터베이스에 데이터를 삽입하는 메서드
+        // 데이터베이스에 Text file 데이터를 삽입하는 메서드
         private void InsertDataIntoDatabase(List<string[]> InsertdataList)
         {            
             
             using (SqlConnection connection = new SqlConnection(connString))
             {
+                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Execution");
                 connection.Open();
+                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
                 string InsertQuery = "INSERT INTO InsertTBL (userID, name, birthYear, addr, mobile1, height) " +
                                      "VALUES (@userID, @name, @birthYear, @addr, @mobile1, @height)";
@@ -538,7 +526,9 @@ namespace WindowsFormsApp1
                     command.Parameters.AddWithValue("@height", int.Parse(values[5]));
 
                     // 쿼리 실행
+                    log.Info(MethodBase.GetCurrentMethod().Name + "DB ExecuteNonQuery");
                     command.ExecuteNonQuery();
+                    log.Info(MethodBase.GetCurrentMethod().Name + "DB ExecuteNonQuery Success");
 
                     //파라미터 초기화
                     command.Parameters.Clear();
@@ -546,11 +536,10 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void log_viewer(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
             try
             {
-
                 //로그 뷰어
                 //현재 날짜의 로그 파일 연결
                 //로그 파일 저장 위치
@@ -567,53 +556,48 @@ namespace WindowsFormsApp1
                 string logString = $"{year}-{month}-{day}.log";
                 string fullFilePath = Path.Combine(month_log_dir, logString);
                 
-                //로깅 중단
+                // 로깅 중단(프로세스 빼앗기)
                 // 중단 이후의 발생된 로그는 어떻게 하지... 
                 log.Logger.Repository.Shutdown();
-
-                //path.Combine and read
-                //textbox에 모든 string read
-                StringBuilder sb = new StringBuilder();
                 
-                if (Exists(log_dir))
-                {
-                    if (Exists(year_log_dir))
-                    {
-                        if (Exists(month_log_dir))
-                        {
-                            if (File.Exists(fullFilePath))
-                            {
-                                using (StreamReader reader = new StreamReader(fullFilePath))
-                                {
-                                    while (reader.ReadLine() != null)
-                                    {
-                                        sb.AppendLine(reader.ReadLine());
-                                    }
-                                    reader.Close();
-                                }
-                                textBox1.Text = sb.ToString();
-                                //log.Logger.Repository.ResetConfiguration();
-                            }
-                            else
-                            {
-                                MessageBox.Show("로그 파일 찾기 실패");
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show("해당 월의 로그가 존재하지 않습니다.");
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("해당 연도의 로그가 존재하지 않습니다.");
-                    }
-                }
-                else
+                StringBuilder sb = new StringBuilder();
+
+                if (!Exists(log_dir))
                 {
                     MessageBox.Show("로그가 존재하지 않습니다.");
+                    return;
                 }
-                
+
+                if (!Exists(year_log_dir))
+                {
+                    MessageBox.Show("해당 연도의 로그가 존재하지 않습니다.");
+                    return;
+                }
+
+                if (!Exists(month_log_dir))
+                {
+                    MessageBox.Show("해당 월의 로그가 존재하지 않습니다.");
+                    return;
+                }
+
+                if (!File.Exists(fullFilePath))
+                {
+                    MessageBox.Show("로그 파일 찾기 실패");
+                    return;
+                }
+
+                using (StreamReader reader = new StreamReader(fullFilePath))
+                {
+                    while (reader.ReadLine() != null)
+                    {
+                        sb.AppendLine(reader.ReadLine());
+                    }
+                    reader.Close();
+                }
+
+                textBox1.Text = sb.ToString();
+
+
             }
             catch (Exception ex)
             {
@@ -625,11 +609,7 @@ namespace WindowsFormsApp1
             }
             log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
 
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            log_viewer(sender, e);
         }        
+
     }
 }
