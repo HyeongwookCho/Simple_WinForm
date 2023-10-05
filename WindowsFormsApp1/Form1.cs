@@ -14,6 +14,11 @@ using System.Text.RegularExpressions;
 using System.IO;
 using static System.IO.Directory;
 using System.Threading;
+using log4net.Config;
+using log4net.Repository.Hierarchy;
+using log4net.Appender;
+using Timer = System.Windows.Forms.Timer;
+using log4net.Core;
 
 namespace WindowsFormsApp1
 {
@@ -22,15 +27,53 @@ namespace WindowsFormsApp1
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private string connString = "Data Source=DESKTOP-PLI5MTR\\SQLEXPRESS;Initial Catalog=TestDB;User ID=sa;Password=1234";
-
+        private MemoryAppender memoryAppender;
         public Form1()
         {
             log.Info("Form1 Start");
-            InitializeComponent();
-            this.Load += Form_Load;
             
+            InitializeComponent();
+
+            this.Load += Form_Load;
+
+            // log4net 에서 memoryAppender를 이용
+            // read/write가 아닌 memory 상에 저장된 로그를 textbox에 전달
+
+            // 1. log4net 설정 파일을 읽고 구성
+            XmlConfigurator.Configure(new System.IO.FileInfo("log4net.config"));
+
+            // 2. MemoryAppender 가져오기
+            memoryAppender = ((Hierarchy)LogManager.GetRepository())
+                .GetAppenders()
+                .OfType<MemoryAppender>()
+                .FirstOrDefault();
+
+            // Timer를 설정 => 일정 간격으로 로그를 TextBox에 표시
+            Timer timer = new Timer();
+            timer.Interval = 1000; // 1초마다 업데이트
+            timer.Tick += Timer_Tick;
+            timer.Start();
+
             this.FormClosing += Form1_FormClosing;
         }
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (memoryAppender != null)
+            {
+                var events = memoryAppender.GetEvents();
+                foreach (LoggingEvent loggingEvent in events)
+                {
+                    // 로그 이벤트 => TextBox 출력
+                    textBox1.AppendText(loggingEvent.RenderedMessage + Environment.NewLine);
+                    // 큐로 라인 수 제한한다. 오래된 라인부터 삭제
+
+                }
+
+                // 로그 처리 후 메모리 로그 해제
+                memoryAppender.Clear();
+            }
+        }
+
         // 프로그램 시작 후 Datagridview 로드
         private void Form_Load(object sender, EventArgs e)
         {
@@ -86,7 +129,7 @@ namespace WindowsFormsApp1
                 {
                     log.Warn(MethodBase.GetCurrentMethod().Name + "() 공백검사 경고");
                     MessageBox.Show("필수 입력 양식 입니다.");
-                    return; // 필수 데이터가 비어있으면 더 이상 진행하지 않고 종료
+                    return;
                 }
 
                 // 데이터 입력 형식 검사
@@ -103,7 +146,7 @@ namespace WindowsFormsApp1
                         "이름 : 최대 10자 \n" +
                         "출생연도 : 4자리 숫자 \n" +
                         "지역 : 2자리 문자 (ex. 서울, 경기)");
-                    return; // 데이터 형식이 올바르지 않으면 종료
+                    return;
                 }
 
                 string mobile1 = mobile1TextBox.Text.Trim();
@@ -114,7 +157,7 @@ namespace WindowsFormsApp1
                 {
                     log.Warn(MethodBase.GetCurrentMethod().Name + "() 전화번호 데이터 입력 형식 경고");
                     MessageBox.Show("전화번호의 입력 형식이 올바르지 않습니다. \n ' - ' 를 제외한 숫자 11자리를 입력해주세요.");
-                    return; // 전화번호 형식이 올바르지 않으면 종료
+                    return; 
                 }
 
                 // 키 데이터 형식 검사
@@ -122,7 +165,7 @@ namespace WindowsFormsApp1
                 {
                     log.Warn(MethodBase.GetCurrentMethod().Name + "() 키 데이터 입력 형식 경고");
                     MessageBox.Show("키의 입력 형식이 올바르지 않습니다. 숫자만을 입력해주세요.");
-                    return; // 키 형식이 올바르지 않으면 종료
+                    return;
                 }
 
                 Form2 f2 = new Form2();
@@ -536,7 +579,7 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        /*private void button2_Click(object sender, EventArgs e)
         {
             try
             {
@@ -609,7 +652,8 @@ namespace WindowsFormsApp1
             }
             log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
 
-        }        
+        }*/
+
 
     }
 }
