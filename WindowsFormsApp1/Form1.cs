@@ -27,7 +27,9 @@ namespace WindowsFormsApp1
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private string connString = "Data Source=DESKTOP-PLI5MTR\\SQLEXPRESS;Initial Catalog=TestDB;User ID=sa;Password=1234";
+
         private MemoryAppender memoryAppender;
+
         public Form1()
         {
             log.Info("Form1 Start");
@@ -50,28 +52,11 @@ namespace WindowsFormsApp1
 
             // Timer를 설정 => 일정 간격으로 로그를 TextBox에 표시
             Timer timer = new Timer();
-            timer.Interval = 1000; // 1초마다 업데이트
-            timer.Tick += Timer_Tick;
+            timer.Interval = 500; // 0.5초마다 업데이트
+            timer.Tick += Print_log;
             timer.Start();
 
             this.FormClosing += Form1_FormClosing;
-        }
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            if (memoryAppender != null)
-            {
-                var events = memoryAppender.GetEvents();
-                foreach (LoggingEvent loggingEvent in events)
-                {
-                    // 로그 이벤트 => TextBox 출력
-                    textBox1.AppendText(loggingEvent.RenderedMessage + Environment.NewLine);
-                    // 큐로 라인 수 제한한다. 오래된 라인부터 삭제
-
-                }
-
-                // 로그 처리 후 메모리 로그 해제
-                memoryAppender.Clear();
-            }
         }
 
         // 프로그램 시작 후 Datagridview 로드
@@ -377,7 +362,7 @@ namespace WindowsFormsApp1
                 
                 dataGridView1.DataSource = ds.Tables["userTBL"];
                 log.Debug(MethodBase.GetCurrentMethod().Name + "Data Rebinding Success");
-                //userID는 수정 불가합니다.
+                //userID는 수정 불가
                 dataGridView1.Columns[0].ReadOnly = true;
                 // 첫 번째 열의 배경색을 변경(수정 불가를 표시)
                 dataGridView1.Columns[0].DefaultCellStyle.BackColor = Color.IndianRed;
@@ -578,6 +563,59 @@ namespace WindowsFormsApp1
                 }                        
             }
         }
+        // 로그 실시간 모니터링
+        private void Print_log(object sender, EventArgs e)
+        {
+            if (memoryAppender != null)
+            {
+                var events = memoryAppender.GetEvents();
+                StringBuilder logBuilder = new StringBuilder(textBox1.Text);
+
+                foreach (LoggingEvent loggingEvent in events)
+                {
+                    // 로그 이벤트를 logBuilder에 추가
+                    logBuilder.AppendLine(loggingEvent.RenderedMessage);
+
+                    // logBuilder의 Line 수 확인
+                    string[] lines = logBuilder.ToString().Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                    int lineCount = lines.Length;
+
+                    // textBox의 라인 수를 20으로 제한
+                    const int maxLines = 20;
+                    if (lineCount > maxLines)
+                    {
+                        // logBuilder에서 초과하는 줄 수를 제거
+                        logBuilder = new StringBuilder(string.Join(Environment.NewLine, lines.Skip(lineCount - maxLines)));
+                    }
+                    for(int i = 0; i < lineCount; i++)
+                    {
+                        Console.WriteLine($"this is lines[{i}] : " + lines[i]);
+                    }
+                    Console.WriteLine("");
+                    // 로그 출력
+                    textBox1.Text = logBuilder.ToString();
+                }
+
+                // 로그 처리 후 메모리 로그 해제
+                memoryAppender.Clear();
+            }
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            log.Info("This is log4net Logging Test A.");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            log.Info("This is log4net Logging Test B.");
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            log.Info("This is log4net Logging Test C.");
+        }
+
+
 
         /*private void button2_Click(object sender, EventArgs e)
         {
@@ -598,11 +636,11 @@ namespace WindowsFormsApp1
                 string month_log_dir = Path.Combine(year_log_dir, month);
                 string logString = $"{year}-{month}-{day}.log";
                 string fullFilePath = Path.Combine(month_log_dir, logString);
-                
+
                 // 로깅 중단(프로세스 빼앗기)
                 // 중단 이후의 발생된 로그는 어떻게 하지... 
                 log.Logger.Repository.Shutdown();
-                
+
                 StringBuilder sb = new StringBuilder();
 
                 if (!Exists(log_dir))
