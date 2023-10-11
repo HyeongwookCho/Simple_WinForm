@@ -19,6 +19,12 @@ using log4net.Repository.Hierarchy;
 using log4net.Appender;
 using Timer = System.Windows.Forms.Timer;
 using log4net.Core;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Xml.Linq;
+using System.Xml.XPath;
+using System.Xml;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace WindowsFormsApp1
 {
@@ -26,35 +32,37 @@ namespace WindowsFormsApp1
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private string connString = "Data Source=DESKTOP-PLI5MTR\\SQLEXPRESS;Initial Catalog=TestDB;User ID=sa;Password=1234";
+        private string connString = "Data Source=DESKTOP-PLI5MTR\\SQLEXPRESS;Initial Catalog=TestDB; User ID=sa;Password=1234";
 
         private MemoryAppender memoryAppender;
 
+        Timer timer_batch = new Timer();
+        Timer timer_log = new Timer();
         public Form1()
         {
-            log.Info("Form1 Start");
+            log.Info("Program Start");
             
             InitializeComponent();
 
             this.Load += Form_Load;
 
             // log4net 에서 memoryAppender를 이용
-            // read/write가 아닌 memory 상에 저장된 로그를 textbox에 전달
+            // read/write가 아닌 memory 상에 저장된 로그를 textbox에 전달            
 
-            // 1. log4net 설정 파일을 읽고 구성
-            XmlConfigurator.Configure(new System.IO.FileInfo("log4net.config"));
-
-            // 2. MemoryAppender 가져오기
+            // log4net 설정 파일을 읽기
+            XmlConfigurator.Configure(new System.IO.FileInfo(@"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\log4net.config"));
+            
+            // MemoryAppender 가져오기
             memoryAppender = ((Hierarchy)LogManager.GetRepository())
                 .GetAppenders()
                 .OfType<MemoryAppender>()
                 .FirstOrDefault();
+            
 
-            // Timer를 설정 => 일정 간격으로 로그를 TextBox에 표시
-            Timer timer = new Timer();
-            timer.Interval = 500; // 0.5초마다 업데이트
-            timer.Tick += Print_log;
-            timer.Start();
+            // Timer를 설정 => 일정 간격으로 로그를 TextBox에 표시            
+            timer_log.Interval = 500; // 0.5초마다 업데이트
+            timer_log.Tick += Print_log;
+            timer_log.Start();
 
             this.FormClosing += Form1_FormClosing;
         }
@@ -90,6 +98,18 @@ namespace WindowsFormsApp1
                     // 첫 번째 열의 배경색을 변경(수정 불가를 표시)
                     dataGridView1.Columns[0].DefaultCellStyle.BackColor = Color.IndianRed;
 
+                    //환경설정
+                    loadJson();
+                    //배치 주기
+                    string[] batchTime = {"1","3","5","10","30","60"};
+
+                    batchTimer.Items.AddRange(batchTime);
+                    // 설정파일에서 배치주기 넣기
+                    batchTimer.SelectedItem = getTimer;
+
+                    // 파일 경로 default
+                    logFileDirectoryTextBox.Text = getLogFileDirectory;
+                    autoExportDirectoryTextBox.Text = getAutoExportDirectory;
                 }
             }
             catch (Exception ex)
@@ -99,7 +119,21 @@ namespace WindowsFormsApp1
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private void loadJson()
+        {
+            string path = @"C:\Users\조형욱\source\repos\Solution1\winformConfig.json";
 
+            var json = File.ReadAllText(path);
+            var jObject = JObject.Parse(json);
+
+            getTimer = (string)jObject["timer"];
+            getLogFileDirectory = (string)jObject["Log File Directory"]+"\\";            
+            getAutoExportDirectory = (string)jObject["Export File Directory"];
+
+        }
+        private string getTimer { get; set; }
+        private string getLogFileDirectory { get; set; }
+        private string getAutoExportDirectory { get; set; }
         //**데이터 입력받기**
         private void submitButton_Click(object sender, EventArgs e)
         {
@@ -569,13 +603,14 @@ namespace WindowsFormsApp1
             if (memoryAppender != null)
             {
                 var events = memoryAppender.GetEvents();
+                
                 StringBuilder logBuilder = new StringBuilder(textBox1.Text);
 
                 foreach (LoggingEvent loggingEvent in events)
                 {
                     // 로그 이벤트를 logBuilder에 추가
                     logBuilder.AppendLine(loggingEvent.RenderedMessage);
-
+                    Console.WriteLine(logBuilder.ToString());
                     // logBuilder의 Line 수 확인
                     string[] lines = logBuilder.ToString().Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
                     int lineCount = lines.Length;
@@ -587,11 +622,7 @@ namespace WindowsFormsApp1
                         // logBuilder에서 초과하는 줄 수를 제거
                         logBuilder = new StringBuilder(string.Join(Environment.NewLine, lines.Skip(lineCount - maxLines)));
                     }
-                    for(int i = 0; i < lineCount; i++)
-                    {
-                        Console.WriteLine($"this is lines[{i}] : " + lines[i]);
-                    }
-                    Console.WriteLine("");
+                    
                     // 로그 출력
                     textBox1.Text = logBuilder.ToString();
                 }
@@ -617,67 +648,167 @@ namespace WindowsFormsApp1
 
 
 
-        /*private void button2_Click(object sender, EventArgs e)
+
+
+
+        // ================ 환경 설정 =======================
+        private void logFileDirectory_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                logFileDirectoryTextBox.Text = folderBrowserDialog.SelectedPath;
+            }
+        }
+        private void autoExportDirectory_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                autoExportDirectoryTextBox.Text = folderBrowserDialog.SelectedPath;
+            }
+        }
+
+        private void createJson()
+        {
+            string path = @"C:\Users\조형욱\source\repos\Solution1\winformConfig.json";
+
+            try
+            {
+                if (!File.Exists(path))
+                {
+                    using (File.Create(path))
+                    {
+                        log.Debug("json 파일 생성 성공");
+                        MessageBox.Show("파일 생성 성공\n다시 시도해주세요.");
+                    }
+                }
+                else
+                {
+                    log.Debug("설정값 세팅 시작");
+                    InputJson(path, batchTimer.Text, logFileDirectoryTextBox.Text, autoExportDirectoryTextBox.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("오류 발생: " + ex.Message, "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
+        }        
+        private void InputJson(string path, string timer ,string logFileDirectory, string autoExportDirectory)
+        {          
+            try
+            {
+                var json = new JObject();
+                json.Add("Log File Directory", logFileDirectory);
+                json.Add("Export File Directory", autoExportDirectory);
+                json.Add("timer", timer);
+
+                string str_json = JsonConvert.SerializeObject(json, Formatting.Indented);
+
+                File.WriteAllText(path, str_json);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("오류 발생: " + ex.Message, "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }        
+        // 환경 설정값 적용 버튼
+        private void applybutton_Click(object sender, EventArgs e)
         {
             try
             {
-                //로그 뷰어
-                //현재 날짜의 로그 파일 연결
-                //로그 파일 저장 위치
-                string log_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Debug\logs";
+                createJson();
+                log4netModify();                
 
+                XmlConfigurator.Configure(new System.IO.FileInfo(@"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\log4net.config"));
+
+                // MemoryAppender 가져오기
+                memoryAppender = ((Hierarchy)LogManager.GetRepository())
+                    .GetAppenders()
+                    .OfType<MemoryAppender>()
+                    .FirstOrDefault();
+
+                MessageBox.Show("적용이 완료되었습니다.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("오류 발생: " + ex.Message, "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // 파일 추출 자동화 버튼
+        private void AutoFileExportButton_Click(object sender, EventArgs e)
+        {
+            // getTimer 값을 이용하여 타이머 설정
+            int interval = int.Parse(getTimer) * 60 * 1000; // 분 단위
+            timer_batch.Interval = interval;
+            timer_batch.Tick += (s, ev) => autoExporting();
+            timer_batch.Start();
+            MessageBox.Show("자동 추출 기능을 시작합니다.\n" +
+                $"{getTimer} 분 간격");
+            autoExportingState.Text = "파일 추출 자동화 진행 중...";
+            autoExportingState.ForeColor = Color.Red;
+        }
+
+        
+        private void autoExporting()
+        {            
+            try
+            {
                 DateTime currentDateTime = DateTime.Now;
+                loadJson();
+                string dir = getAutoExportDirectory;
 
                 string year = currentDateTime.ToString("yyyy");
                 string month = currentDateTime.ToString("MM");
                 string day = currentDateTime.ToString("dd");
+                string hour = currentDateTime.ToString("HH");
+                string minute = currentDateTime.ToString("mm");
+                string second = currentDateTime.ToString("ss");
+                string milli = currentDateTime.ToString("FFF");
+                
+                string filePathString = $"{year}-{month}-{day}-{hour}-{minute}-{second}-{milli}.txt";
+                string fullFilePath = Path.Combine(dir, filePathString);
 
-                string year_log_dir = Path.Combine(log_dir, year);
-                string month_log_dir = Path.Combine(year_log_dir, month);
-                string logString = $"{year}-{month}-{day}.log";
-                string fullFilePath = Path.Combine(month_log_dir, logString);
+                                  
 
-                // 로깅 중단(프로세스 빼앗기)
-                // 중단 이후의 발생된 로그는 어떻게 하지... 
-                log.Logger.Repository.Shutdown();
-
-                StringBuilder sb = new StringBuilder();
-
-                if (!Exists(log_dir))
+                // 데이터베이스 연결 및 데이터 추출
+                using (SqlConnection connection = new SqlConnection(connString))
                 {
-                    MessageBox.Show("로그가 존재하지 않습니다.");
-                    return;
-                }
+                    log.Info(MethodBase.GetCurrentMethod().Name + " DB Connection Execution");
+                    connection.Open();
+                    log.Info(MethodBase.GetCurrentMethod().Name + " DB Connection Success");
 
-                if (!Exists(year_log_dir))
-                {
-                    MessageBox.Show("해당 연도의 로그가 존재하지 않습니다.");
-                    return;
-                }
+                    SqlCommand cmd = new SqlCommand();
+                    string viewQuery = "SELECT * FROM userTBL;";
+                    cmd.Connection = connection;
+                    cmd.CommandText = viewQuery;
+                    log.Info(MethodBase.GetCurrentMethod().Name + " DB to Text Execution");
 
-                if (!Exists(month_log_dir))
-                {
-                    MessageBox.Show("해당 월의 로그가 존재하지 않습니다.");
-                    return;
-                }
-
-                if (!File.Exists(fullFilePath))
-                {
-                    MessageBox.Show("로그 파일 찾기 실패");
-                    return;
-                }
-
-                using (StreamReader reader = new StreamReader(fullFilePath))
-                {
-                    while (reader.ReadLine() != null)
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        sb.AppendLine(reader.ReadLine());
+                        StringBuilder sb = new StringBuilder();
+                        while (reader.Read()) // 모든 행 읽기
+                        {
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                sb.Append(reader[i].ToString() + "\t"); // 각 컬럼을 \t 구분자와 함께 StringBuilder에 추가
+                            }
+                            sb.AppendLine();
+                        }
+                        Console.WriteLine(sb.ToString());
+                        log.Info(MethodBase.GetCurrentMethod().Name + " DB to Text Success");
+
+                        // 파일에 데이터 쓰기 (이어쓰기 없음)
+                        using (StreamWriter writer = new StreamWriter(fullFilePath, false))
+                        {
+                            writer.Write(sb.ToString());
+                        }
                     }
-                    reader.Close();
                 }
-
-                textBox1.Text = sb.ToString();
-
 
             }
             catch (Exception ex)
@@ -687,11 +818,36 @@ namespace WindowsFormsApp1
             }
             finally
             {
+
             }
             log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
+        }
 
-        }*/
+        private void autoExportingStopButton_Click(object sender, EventArgs e)
+        {
+            timer_batch.Stop();
+            MessageBox.Show("자동 추출 기능이 종료되었습니다.");
+            autoExportingState.Text = "파일 추출 자동화 꺼짐";
+            autoExportingState.ForeColor = Color.DarkCyan;
+        }
 
+        private void log4netModify()
+        {
+            XmlDocument doc = new XmlDocument();
 
+            // XML file 위치
+            doc.Load(@"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\log4net.config");
+            XmlNode root = doc.DocumentElement;
+            XmlNode subNode1 = root.SelectSingleNode("log4net");
+            XmlNode subNode2 = subNode1.SelectSingleNode("appender");
+            XmlNode nodeForModify = subNode2.SelectSingleNode("file");
+
+            // 파일 경로 수정
+            loadJson();
+            nodeForModify.Attributes[0].Value = getLogFileDirectory;
+
+            // XML 저장
+            doc.Save(@"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\log4net.config");
+        }
     }
 }

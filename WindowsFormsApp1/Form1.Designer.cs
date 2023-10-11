@@ -46,6 +46,7 @@ namespace WindowsFormsApp1
             this.addrTextBox = new System.Windows.Forms.TextBox();
             this.submitButton = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.AutoFileExportButton = new System.Windows.Forms.Button();
             this.ToTextFile_Button = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.UpdateButton = new System.Windows.Forms.Button();
@@ -57,11 +58,28 @@ namespace WindowsFormsApp1
             this.label3 = new System.Windows.Forms.Label();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.applybutton = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.label14 = new System.Windows.Forms.Label();
+            this.autoExportDirectory = new System.Windows.Forms.Button();
+            this.label13 = new System.Windows.Forms.Label();
+            this.autoExportDirectoryTextBox = new System.Windows.Forms.TextBox();
+            this.batchTimer = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.logFileDirectory = new System.Windows.Forms.Button();
+            this.logFileDirectoryTextBox = new System.Windows.Forms.TextBox();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.autoExportingStopButton = new System.Windows.Forms.Button();
+            this.autoExportingState = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -70,6 +88,9 @@ namespace WindowsFormsApp1
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.tabPage4.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -78,6 +99,7 @@ namespace WindowsFormsApp1
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -90,7 +112,7 @@ namespace WindowsFormsApp1
             this.tabPage1.Controls.Add(this.submitButton);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.tabPage1.Size = new System.Drawing.Size(737, 384);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "정보 입력";
@@ -269,6 +291,9 @@ namespace WindowsFormsApp1
             // 
             this.tabPage2.BackColor = System.Drawing.Color.LightSkyBlue;
             this.tabPage2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage2.Controls.Add(this.autoExportingState);
+            this.tabPage2.Controls.Add(this.autoExportingStopButton);
+            this.tabPage2.Controls.Add(this.AutoFileExportButton);
             this.tabPage2.Controls.Add(this.ToTextFile_Button);
             this.tabPage2.Controls.Add(this.label2);
             this.tabPage2.Controls.Add(this.UpdateButton);
@@ -276,17 +301,28 @@ namespace WindowsFormsApp1
             this.tabPage2.Controls.Add(this.dataGridView1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.tabPage2.Size = new System.Drawing.Size(737, 384);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "유저테이블";
+            this.tabPage2.Text = "테이블 뷰어";
+            // 
+            // AutoFileExportButton
+            // 
+            this.AutoFileExportButton.Font = new System.Drawing.Font("굴림", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.AutoFileExportButton.Location = new System.Drawing.Point(500, 347);
+            this.AutoFileExportButton.Name = "AutoFileExportButton";
+            this.AutoFileExportButton.Size = new System.Drawing.Size(130, 30);
+            this.AutoFileExportButton.TabIndex = 5;
+            this.AutoFileExportButton.Text = "Auto Export";
+            this.AutoFileExportButton.UseVisualStyleBackColor = true;
+            this.AutoFileExportButton.Click += new System.EventHandler(this.AutoFileExportButton_Click);
             // 
             // ToTextFile_Button
             // 
             this.ToTextFile_Button.Font = new System.Drawing.Font("굴림", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.ToTextFile_Button.Location = new System.Drawing.Point(214, 4);
+            this.ToTextFile_Button.Location = new System.Drawing.Point(415, 347);
             this.ToTextFile_Button.Name = "ToTextFile_Button";
-            this.ToTextFile_Button.Size = new System.Drawing.Size(79, 34);
+            this.ToTextFile_Button.Size = new System.Drawing.Size(79, 30);
             this.ToTextFile_Button.TabIndex = 4;
             this.ToTextFile_Button.Text = "Export";
             this.ToTextFile_Button.UseVisualStyleBackColor = true;
@@ -296,7 +332,7 @@ namespace WindowsFormsApp1
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("휴먼둥근헤드라인", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label2.Location = new System.Drawing.Point(6, 4);
+            this.label2.Location = new System.Drawing.Point(5, 4);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(202, 34);
             this.label2.TabIndex = 3;
@@ -305,9 +341,9 @@ namespace WindowsFormsApp1
             // UpdateButton
             // 
             this.UpdateButton.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.UpdateButton.Location = new System.Drawing.Point(604, 4);
+            this.UpdateButton.Location = new System.Drawing.Point(648, 4);
             this.UpdateButton.Name = "UpdateButton";
-            this.UpdateButton.Size = new System.Drawing.Size(123, 34);
+            this.UpdateButton.Size = new System.Drawing.Size(79, 34);
             this.UpdateButton.TabIndex = 2;
             this.UpdateButton.Text = "Save";
             this.UpdateButton.UseVisualStyleBackColor = true;
@@ -316,9 +352,9 @@ namespace WindowsFormsApp1
             // DeleteButton
             // 
             this.DeleteButton.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.DeleteButton.Location = new System.Drawing.Point(475, 4);
+            this.DeleteButton.Location = new System.Drawing.Point(563, 4);
             this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(123, 34);
+            this.DeleteButton.Size = new System.Drawing.Size(79, 34);
             this.DeleteButton.TabIndex = 1;
             this.DeleteButton.Text = "Delete";
             this.DeleteButton.UseVisualStyleBackColor = true;
@@ -331,7 +367,7 @@ namespace WindowsFormsApp1
             this.dataGridView1.Location = new System.Drawing.Point(1, 41);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(731, 337);
+            this.dataGridView1.Size = new System.Drawing.Size(731, 300);
             this.dataGridView1.TabIndex = 0;
             // 
             // tabPage3
@@ -342,10 +378,10 @@ namespace WindowsFormsApp1
             this.tabPage3.Controls.Add(this.dataGridView2);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.tabPage3.Size = new System.Drawing.Size(737, 384);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "테이블 뷰어";
+            this.tabPage3.Text = "File->DB 삽입";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // label5
@@ -359,7 +395,7 @@ namespace WindowsFormsApp1
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(638, 31);
+            this.button1.Location = new System.Drawing.Point(638, 24);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 2;
@@ -370,7 +406,7 @@ namespace WindowsFormsApp1
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(323, 31);
+            this.label3.Location = new System.Drawing.Point(302, 31);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(309, 36);
             this.label3.TabIndex = 1;
@@ -394,44 +430,11 @@ namespace WindowsFormsApp1
             this.tabPage4.Controls.Add(this.textBox1);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
             this.tabPage4.Size = new System.Drawing.Size(737, 384);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "로그 뷰어";
             this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(0, 0);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(737, 293);
-            this.textBox1.TabIndex = 0;
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(6, 299);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(142, 79);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "loggingTest1";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(171, 299);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(142, 79);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "loggingTest2";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button4
             // 
@@ -443,14 +446,215 @@ namespace WindowsFormsApp1
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(171, 299);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(142, 79);
+            this.button3.TabIndex = 2;
+            this.button3.Text = "loggingTest2";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(6, 299);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(142, 79);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "loggingTest1";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(0, 0);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBox1.Size = new System.Drawing.Size(737, 293);
+            this.textBox1.TabIndex = 0;
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.applybutton);
+            this.tabPage5.Controls.Add(this.label11);
+            this.tabPage5.Controls.Add(this.panel3);
+            this.tabPage5.Controls.Add(this.label7);
+            this.tabPage5.Controls.Add(this.panel1);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tabPage5.Size = new System.Drawing.Size(737, 384);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "환경 설정";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // applybutton
+            // 
+            this.applybutton.Location = new System.Drawing.Point(649, 361);
+            this.applybutton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.applybutton.Name = "applybutton";
+            this.applybutton.Size = new System.Drawing.Size(83, 21);
+            this.applybutton.TabIndex = 2;
+            this.applybutton.Text = "적용";
+            this.applybutton.UseVisualStyleBackColor = true;
+            this.applybutton.Click += new System.EventHandler(this.applybutton_Click);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(53, 150);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(81, 12);
+            this.label11.TabIndex = 3;
+            this.label11.Text = "배치 프로세스";
+            // 
+            // panel3
+            // 
+            this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel3.Controls.Add(this.label14);
+            this.panel3.Controls.Add(this.autoExportDirectory);
+            this.panel3.Controls.Add(this.label13);
+            this.panel3.Controls.Add(this.autoExportDirectoryTextBox);
+            this.panel3.Controls.Add(this.batchTimer);
+            this.panel3.Controls.Add(this.label10);
+            this.panel3.Location = new System.Drawing.Point(41, 158);
+            this.panel3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(651, 151);
+            this.panel3.TabIndex = 4;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(211, 34);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(17, 12);
+            this.label14.TabIndex = 6;
+            this.label14.Text = "분";
+            // 
+            // autoExportDirectory
+            // 
+            this.autoExportDirectory.Location = new System.Drawing.Point(537, 110);
+            this.autoExportDirectory.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.autoExportDirectory.Name = "autoExportDirectory";
+            this.autoExportDirectory.Size = new System.Drawing.Size(83, 21);
+            this.autoExportDirectory.TabIndex = 1;
+            this.autoExportDirectory.Text = "찾아보기..";
+            this.autoExportDirectory.UseVisualStyleBackColor = true;
+            this.autoExportDirectory.Click += new System.EventHandler(this.autoExportDirectory_Click);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(21, 34);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(57, 12);
+            this.label13.TabIndex = 5;
+            this.label13.Text = "배치 주기";
+            // 
+            // autoExportDirectoryTextBox
+            // 
+            this.autoExportDirectoryTextBox.Location = new System.Drawing.Point(24, 110);
+            this.autoExportDirectoryTextBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.autoExportDirectoryTextBox.Name = "autoExportDirectoryTextBox";
+            this.autoExportDirectoryTextBox.Size = new System.Drawing.Size(495, 21);
+            this.autoExportDirectoryTextBox.TabIndex = 0;
+            // 
+            // batchTimer
+            // 
+            this.batchTimer.FormattingEnabled = true;
+            this.batchTimer.Location = new System.Drawing.Point(100, 32);
+            this.batchTimer.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.batchTimer.Name = "batchTimer";
+            this.batchTimer.Size = new System.Drawing.Size(106, 20);
+            this.batchTimer.TabIndex = 0;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(21, 87);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(148, 12);
+            this.label10.TabIndex = 1;
+            this.label10.Text = "DB -> Text File 추출 위치";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(53, 65);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(85, 12);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "로그 파일 위치";
+            // 
+            // panel1
+            // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel1.Controls.Add(this.logFileDirectory);
+            this.panel1.Controls.Add(this.logFileDirectoryTextBox);
+            this.panel1.Location = new System.Drawing.Point(41, 72);
+            this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(651, 61);
+            this.panel1.TabIndex = 0;
+            // 
+            // logFileDirectory
+            // 
+            this.logFileDirectory.Location = new System.Drawing.Point(537, 20);
+            this.logFileDirectory.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.logFileDirectory.Name = "logFileDirectory";
+            this.logFileDirectory.Size = new System.Drawing.Size(83, 21);
+            this.logFileDirectory.TabIndex = 1;
+            this.logFileDirectory.Text = "찾아보기..";
+            this.logFileDirectory.UseVisualStyleBackColor = true;
+            this.logFileDirectory.Click += new System.EventHandler(this.logFileDirectory_Click);
+            // 
+            // logFileDirectoryTextBox
+            // 
+            this.logFileDirectoryTextBox.Location = new System.Drawing.Point(17, 20);
+            this.logFileDirectoryTextBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.logFileDirectoryTextBox.Name = "logFileDirectoryTextBox";
+            this.logFileDirectoryTextBox.Size = new System.Drawing.Size(502, 21);
+            this.logFileDirectoryTextBox.TabIndex = 0;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // autoExportingStopButton
+            // 
+            this.autoExportingStopButton.Font = new System.Drawing.Font("굴림", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.autoExportingStopButton.Location = new System.Drawing.Point(636, 347);
+            this.autoExportingStopButton.Name = "autoExportingStopButton";
+            this.autoExportingStopButton.Size = new System.Drawing.Size(91, 30);
+            this.autoExportingStopButton.TabIndex = 7;
+            this.autoExportingStopButton.Text = "STOP";
+            this.autoExportingStopButton.UseVisualStyleBackColor = true;
+            this.autoExportingStopButton.Click += new System.EventHandler(this.autoExportingStopButton_Click);
+            // 
+            // autoExportingState
+            // 
+            this.autoExportingState.AutoSize = true;
+            this.autoExportingState.BackColor = System.Drawing.Color.White;
+            this.autoExportingState.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.autoExportingState.ForeColor = System.Drawing.Color.DarkCyan;
+            this.autoExportingState.Location = new System.Drawing.Point(6, 354);
+            this.autoExportingState.Name = "autoExportingState";
+            this.autoExportingState.Size = new System.Drawing.Size(127, 14);
+            this.autoExportingState.TabIndex = 8;
+            this.autoExportingState.Text = "파일 추출 자동화 꺼짐";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(759, 426);
+            this.ClientSize = new System.Drawing.Size(764, 425);
             this.Controls.Add(this.tabControl1);
             this.Name = "Form1";
-            this.Text = "데이터베이스 관리 프로그램";
+            this.Text = "유저 정보 관리 프로그램";
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -463,6 +667,12 @@ namespace WindowsFormsApp1
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -502,6 +712,24 @@ namespace WindowsFormsApp1
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.Button AutoFileExportButton;
+        private System.Windows.Forms.Button applybutton;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Button autoExportDirectory;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox autoExportDirectoryTextBox;
+        private System.Windows.Forms.ComboBox batchTimer;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button logFileDirectory;
+        private System.Windows.Forms.TextBox logFileDirectoryTextBox;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Button autoExportingStopButton;
+        private System.Windows.Forms.Label autoExportingState;
     }
 }
 
