@@ -46,6 +46,8 @@ namespace WindowsFormsApp1
             this.addrTextBox = new System.Windows.Forms.TextBox();
             this.submitButton = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.autoExportingState = new System.Windows.Forms.Label();
+            this.autoExportingStopButton = new System.Windows.Forms.Button();
             this.AutoFileExportButton = new System.Windows.Forms.Button();
             this.ToTextFile_Button = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -58,9 +60,6 @@ namespace WindowsFormsApp1
             this.label3 = new System.Windows.Forms.Label();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.applybutton = new System.Windows.Forms.Button();
@@ -78,8 +77,7 @@ namespace WindowsFormsApp1
             this.logFileDirectoryTextBox = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.autoExportingStopButton = new System.Windows.Forms.Button();
-            this.autoExportingState = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -112,10 +110,10 @@ namespace WindowsFormsApp1
             this.tabPage1.Controls.Add(this.submitButton);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(737, 384);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "정보 입력";
+            this.tabPage1.Text = "유저 등록";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel1
@@ -228,7 +226,7 @@ namespace WindowsFormsApp1
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(140, 50);
             this.label6.TabIndex = 5;
-            this.label6.Text = "출생년도*";
+            this.label6.Text = "출생연도*";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label4
@@ -301,10 +299,33 @@ namespace WindowsFormsApp1
             this.tabPage2.Controls.Add(this.dataGridView1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(737, 384);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "테이블 뷰어";
+            // 
+            // autoExportingState
+            // 
+            this.autoExportingState.AutoSize = true;
+            this.autoExportingState.BackColor = System.Drawing.Color.White;
+            this.autoExportingState.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.autoExportingState.ForeColor = System.Drawing.Color.DarkCyan;
+            this.autoExportingState.Location = new System.Drawing.Point(6, 354);
+            this.autoExportingState.Name = "autoExportingState";
+            this.autoExportingState.Size = new System.Drawing.Size(127, 14);
+            this.autoExportingState.TabIndex = 8;
+            this.autoExportingState.Text = "파일 추출 자동화 꺼짐";
+            // 
+            // autoExportingStopButton
+            // 
+            this.autoExportingStopButton.Font = new System.Drawing.Font("굴림", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.autoExportingStopButton.Location = new System.Drawing.Point(636, 347);
+            this.autoExportingStopButton.Name = "autoExportingStopButton";
+            this.autoExportingStopButton.Size = new System.Drawing.Size(91, 30);
+            this.autoExportingStopButton.TabIndex = 7;
+            this.autoExportingStopButton.Text = "STOP";
+            this.autoExportingStopButton.UseVisualStyleBackColor = true;
+            this.autoExportingStopButton.Click += new System.EventHandler(this.autoExportingStopButton_Click);
             // 
             // AutoFileExportButton
             // 
@@ -378,10 +399,10 @@ namespace WindowsFormsApp1
             this.tabPage3.Controls.Add(this.dataGridView2);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage3.Size = new System.Drawing.Size(737, 384);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "File->DB 삽입";
+            this.tabPage3.Text = "Text->DB 삽입";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // label5
@@ -389,9 +410,9 @@ namespace WindowsFormsApp1
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(22, 55);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(59, 12);
+            this.label5.Size = new System.Drawing.Size(53, 12);
             this.label5.TabIndex = 3;
-            this.label5.Text = "InsertTBL";
+            this.label5.Text = "userTBL";
             // 
             // button1
             // 
@@ -408,9 +429,9 @@ namespace WindowsFormsApp1
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(302, 31);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(309, 36);
+            this.label3.Size = new System.Drawing.Size(303, 36);
             this.label3.TabIndex = 1;
-            this.label3.Text = "TestDB.InsertTBL에 삽입할 .txt 데이터를 입력해주세요.\r\n\r\n\r\n";
+            this.label3.Text = "TestDB.userTBL에 삽입할 .txt 데이터를 입력해주세요.\r\n\r\n\r\n";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // dataGridView2
@@ -424,47 +445,15 @@ namespace WindowsFormsApp1
             // 
             // tabPage4
             // 
-            this.tabPage4.Controls.Add(this.button4);
-            this.tabPage4.Controls.Add(this.button3);
-            this.tabPage4.Controls.Add(this.button2);
+            this.tabPage4.Controls.Add(this.label15);
             this.tabPage4.Controls.Add(this.textBox1);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage4.Size = new System.Drawing.Size(737, 384);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "로그 뷰어";
             this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(338, 299);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(142, 79);
-            this.button4.TabIndex = 3;
-            this.button4.Text = "loggingTest3";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(171, 299);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(142, 79);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "loggingTest2";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(6, 299);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(142, 79);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "loggingTest1";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // textBox1
             // 
@@ -472,7 +461,7 @@ namespace WindowsFormsApp1
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(737, 293);
+            this.textBox1.Size = new System.Drawing.Size(737, 384);
             this.textBox1.TabIndex = 0;
             // 
             // tabPage5
@@ -624,28 +613,16 @@ namespace WindowsFormsApp1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // autoExportingStopButton
+            // label15
             // 
-            this.autoExportingStopButton.Font = new System.Drawing.Font("굴림", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.autoExportingStopButton.Location = new System.Drawing.Point(636, 347);
-            this.autoExportingStopButton.Name = "autoExportingStopButton";
-            this.autoExportingStopButton.Size = new System.Drawing.Size(91, 30);
-            this.autoExportingStopButton.TabIndex = 7;
-            this.autoExportingStopButton.Text = "STOP";
-            this.autoExportingStopButton.UseVisualStyleBackColor = true;
-            this.autoExportingStopButton.Click += new System.EventHandler(this.autoExportingStopButton_Click);
-            // 
-            // autoExportingState
-            // 
-            this.autoExportingState.AutoSize = true;
-            this.autoExportingState.BackColor = System.Drawing.Color.White;
-            this.autoExportingState.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.autoExportingState.ForeColor = System.Drawing.Color.DarkCyan;
-            this.autoExportingState.Location = new System.Drawing.Point(6, 354);
-            this.autoExportingState.Name = "autoExportingState";
-            this.autoExportingState.Size = new System.Drawing.Size(127, 14);
-            this.autoExportingState.TabIndex = 8;
-            this.autoExportingState.Text = "파일 추출 자동화 꺼짐";
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("굴림", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label15.ForeColor = System.Drawing.Color.Red;
+            this.label15.Location = new System.Drawing.Point(579, 368);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(131, 13);
+            this.label15.TabIndex = 1;
+            this.label15.Text = "실시간 모니터링 중...";
             // 
             // Form1
             // 
@@ -709,9 +686,6 @@ namespace WindowsFormsApp1
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.Button AutoFileExportButton;
         private System.Windows.Forms.Button applybutton;
@@ -730,6 +704,7 @@ namespace WindowsFormsApp1
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button autoExportingStopButton;
         private System.Windows.Forms.Label autoExportingState;
+        private System.Windows.Forms.Label label15;
     }
 }
 

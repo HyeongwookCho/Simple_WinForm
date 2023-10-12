@@ -43,9 +43,44 @@ namespace WindowsFormsApp1
             log.Info("Program Start");
             
             InitializeComponent();
+            //유저 정보 placeholder
+            userIDTextBox.Text = "영문 최대 8자리";
+            nameTextBox.Text = "영문/한글 최대 10자리";
+            birthYearTextBox.Text = "4자리 숫자를 입력";
+            addrTextBox.Text = "한글 2자리 ex)서울, 경기";
+            mobile1TextBox.Text = " - 를 제외한 11자리 숫자 입력";
+            heightTextBox.Text = "숫자 입력";
 
+            userIDTextBox.ForeColor = Color.Gray;
+            nameTextBox.ForeColor = Color.Gray;
+            birthYearTextBox.ForeColor = Color.Gray;
+            addrTextBox.ForeColor = Color.Gray;
+            mobile1TextBox.ForeColor = Color.Gray;
+            heightTextBox.ForeColor = Color.Gray;
+
+            userIDTextBox.GotFocus += RemoveUserIDText;
+            userIDTextBox.LostFocus += AddUserIDText;
+
+            nameTextBox.GotFocus += RemoveNameText;
+            nameTextBox.LostFocus += AddNameText;
+
+            birthYearTextBox.GotFocus += RemoveBirthText;
+            birthYearTextBox.LostFocus += AddBirthText;
+
+            addrTextBox.GotFocus += RemoveAddrText;
+            addrTextBox.LostFocus += AddAddrText;
+
+            mobile1TextBox.GotFocus += RemoveMobileText;
+            mobile1TextBox.LostFocus += AddMobileText;
+
+            heightTextBox.GotFocus += RemoveHeightText;
+            heightTextBox.LostFocus += AddHeightText;
+            
+
+            //테이블 뷰어 탭
             this.Load += Form_Load;
 
+            //로그 뷰어 탭
             // log4net 에서 memoryAppender를 이용
             // read/write가 아닌 memory 상에 저장된 로그를 textbox에 전달            
 
@@ -57,13 +92,11 @@ namespace WindowsFormsApp1
                 .GetAppenders()
                 .OfType<MemoryAppender>()
                 .FirstOrDefault();
-            
-
             // Timer를 설정 => 일정 간격으로 로그를 TextBox에 표시            
             timer_log.Interval = 500; // 0.5초마다 업데이트
             timer_log.Tick += Print_log;
             timer_log.Start();
-
+            
             this.FormClosing += Form1_FormClosing;
         }
 
@@ -209,8 +242,114 @@ namespace WindowsFormsApp1
             }
             log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
         }
+        // 사용자ID placeholder 메소드
+        public void RemoveUserIDText(object sender, EventArgs e)
+        {
+            if (userIDTextBox.Text == "영문 최대 8자리")
+            {
+                userIDTextBox.Text = "";
+                userIDTextBox.ForeColor = Color.Black;
+            }
+        }
 
+        public void AddUserIDText(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(userIDTextBox.Text))
+            {
+                userIDTextBox.Text = "영문 최대 8자리";
+                userIDTextBox.ForeColor = Color.Gray;
+            }
+        }
+        // 이름 placeholder 메소드
+        public void RemoveNameText(object sender, EventArgs e)
+        {
+            if (nameTextBox.Text == "영문/한글 최대 10자리")
+            {
+                nameTextBox.Text = "";
+                nameTextBox.ForeColor = Color.Black;
+            }
+        }
 
+        public void AddNameText(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(nameTextBox.Text))
+            {
+                nameTextBox.Text = "영문/한글 최대 10자리";
+                nameTextBox.ForeColor = Color.Gray;
+            }
+        }
+        // 출생연도 placeholder 메소드
+        public void RemoveBirthText(object sender, EventArgs e)
+        {
+            if (birthYearTextBox.Text == "4자리 숫자를 입력")
+            {
+                birthYearTextBox.Text = "";
+                birthYearTextBox.ForeColor = Color.Black;
+            }
+        }
+
+        public void AddBirthText(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(birthYearTextBox.Text))
+            {
+                birthYearTextBox.Text = "4자리 숫자를 입력";
+                birthYearTextBox.ForeColor = Color.Gray;
+            }
+        }
+        // 지역 placeholder 메소드
+        public void RemoveAddrText(object sender, EventArgs e)
+        {
+            if (addrTextBox.Text == "한글 2자리 ex)서울, 경기")
+            {
+                addrTextBox.Text = "";
+                addrTextBox.ForeColor = Color.Black;
+            }
+        }
+
+        public void AddAddrText(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(addrTextBox.Text))
+            {
+                addrTextBox.Text = "한글 2자리 ex)서울, 경기";
+                addrTextBox.ForeColor = Color.Gray;
+            }
+        }
+        // 전화번호 placeholder 메소드
+        public void RemoveMobileText(object sender, EventArgs e)
+        {
+            if (mobile1TextBox.Text == " - 를 제외한 11자리 숫자 입력")
+            {
+                mobile1TextBox.Text = "";
+                mobile1TextBox.ForeColor = Color.Black;
+            }
+        }
+
+        public void AddMobileText(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(mobile1TextBox.Text))
+            {
+                mobile1TextBox.Text = " - 를 제외한 11자리 숫자 입력";
+                mobile1TextBox.ForeColor = Color.Gray;
+            }
+        }
+        // 키 placeholder 메소드
+        public void RemoveHeightText(object sender, EventArgs e)
+        {
+            if (heightTextBox.Text == "숫자 입력")
+            {
+                heightTextBox.Text = "";
+                heightTextBox.ForeColor = Color.Black;
+            }
+        }
+
+        public void AddHeightText(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(heightTextBox.Text))
+            {
+                heightTextBox.Text = "숫자 입력";
+                heightTextBox.ForeColor = Color.Gray;
+            }
+        }
 
         // 각 항목에 대한 데이터 형식 검사 메서드를 추가
         private bool IsValidUserID(string userID)
@@ -411,8 +550,9 @@ namespace WindowsFormsApp1
 
         private void ToTextFile_Button_Click(object sender, EventArgs e)
         {
+            loadJson();
             //파일 저장 위치
-            string dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export";
+            string dir = getAutoExportDirectory;
             // 디렉토리 일자별 구분을 위한 현재 연,월,일 파싱
 
             DateTime currentDateTime = DateTime.Now;
@@ -424,30 +564,16 @@ namespace WindowsFormsApp1
             string minute = currentDateTime.ToString("mm");
             string second = currentDateTime.ToString("ss");
             string milli = currentDateTime.ToString("FFF");
-
-            string year_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export\" + year;
-            string month_dir = @"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\bin\Export\" + year + @"\" + month;
+            
             string filePathString = $"{year}-{month}-{day}-{hour}-{minute}-{second}-{milli}.txt";
-            string fullFilePath = Path.Combine(month_dir, filePathString);
+            string fullFilePath = Path.Combine(dir, filePathString);
             try
             {
                 // Export 디렉토리 존재 여부 확인
                 if (!Exists(dir))
                 {
                     CreateDirectory(dir);
-                }
-
-                // year 디렉토리 존재 여부 확인
-                if (!Exists(year_dir))
-                {
-                    CreateDirectory(year_dir);
-                }
-
-                // month 디렉토리 존재 여부 확인
-                if (!Exists(month_dir))
-                {
-                    CreateDirectory(month_dir);
-                }
+                }                
 
                 // 데이터베이스 연결 및 데이터 추출
                 using (SqlConnection connection = new SqlConnection(connString))
@@ -481,6 +607,7 @@ namespace WindowsFormsApp1
                         {
                             writer.Write(sb.ToString());
                         }
+                        MessageBox.Show("파일 추출 성공");
                     }
                 }
 
@@ -497,7 +624,7 @@ namespace WindowsFormsApp1
             log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
 
         }
-
+        // Text -> DB 파일 찾기 버튼
         private void button1_Click(object sender, EventArgs e)
         {   
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -541,7 +668,7 @@ namespace WindowsFormsApp1
                 }
             }
         }
-
+        // Text -> DB datagridview 테이블 출력
         private void showDataGrid()
         {
             DataTable dt = new DataTable();
@@ -551,7 +678,7 @@ namespace WindowsFormsApp1
                 connection.Open();
                 log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
-                string selectQuery = "SELECT * FROM InsertTBL";
+                string selectQuery = "SELECT * FROM userTBL";
 
                 SqlCommand command = new SqlCommand(selectQuery, connection);
 
@@ -572,7 +699,7 @@ namespace WindowsFormsApp1
                 connection.Open();
                 log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
-                string InsertQuery = "INSERT INTO InsertTBL (userID, name, birthYear, addr, mobile1, height) " +
+                string InsertQuery = "INSERT INTO userTBL (userID, name, birthYear, addr, mobile1, height) " +
                                      "VALUES (@userID, @name, @birthYear, @addr, @mobile1, @height)";
 
                 SqlCommand command = new SqlCommand(InsertQuery, connection);
@@ -631,25 +758,7 @@ namespace WindowsFormsApp1
                 memoryAppender.Clear();
             }
         }
-        private void button2_Click(object sender, EventArgs e)
-        {
-            log.Info("This is log4net Logging Test A.");
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            log.Info("This is log4net Logging Test B.");
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            log.Info("This is log4net Logging Test C.");
-        }
-
-
-
-
-
+        
 
         // ================ 환경 설정 =======================
         private void logFileDirectory_Click(object sender, EventArgs e)
@@ -743,14 +852,21 @@ namespace WindowsFormsApp1
         private void AutoFileExportButton_Click(object sender, EventArgs e)
         {
             // getTimer 값을 이용하여 타이머 설정
-            int interval = int.Parse(getTimer) * 60 * 1000; // 분 단위
-            timer_batch.Interval = interval;
-            timer_batch.Tick += (s, ev) => autoExporting();
-            timer_batch.Start();
-            MessageBox.Show("자동 추출 기능을 시작합니다.\n" +
-                $"{getTimer} 분 간격");
-            autoExportingState.Text = "파일 추출 자동화 진행 중...";
-            autoExportingState.ForeColor = Color.Red;
+            int interval = int.Parse(getTimer)* 60  * 1000; // 분 단위
+            if (!timer_batch.Enabled)
+            {
+                timer_batch.Interval = interval;
+                timer_batch.Tick += (s, ev) => autoExporting();
+                timer_batch.Start();
+                MessageBox.Show("자동 추출 기능을 시작합니다.\n" +
+                    $"{getTimer} 분 간격");
+                autoExportingState.Text = "파일 추출 자동화 진행 중...";
+                autoExportingState.ForeColor = Color.Red;
+            }
+            else
+            {
+                MessageBox.Show("이미 자동 추출을 진행 중 입니다.");
+            }
         }
 
         
