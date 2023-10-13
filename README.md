@@ -1,6 +1,5 @@
-# Simple_WinForm
-.NET Framework 통한 Window Form App 제작
-***[유저 정보 관리 프로그램***
+# 유저 정보 관리 프로그램
+## .NET Framework 통한 Window Form App 제작
 ![image](https://github.com/HyeongwookCho/Simple_WinForm/assets/86861803/a15b4bf4-f57d-42af-ae47-44376412e810)
 ![image](https://github.com/HyeongwookCho/Simple_WinForm/assets/86861803/74173bc5-3403-4c4d-a4fe-ad41087b040a)
 ![image](https://github.com/HyeongwookCho/Simple_WinForm/assets/86861803/53081add-7770-493f-b796-df03ba094a69)
