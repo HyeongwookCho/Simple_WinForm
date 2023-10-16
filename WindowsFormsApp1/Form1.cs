@@ -32,7 +32,7 @@ namespace WindowsFormsApp1
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private string connString = "Data Source=DESKTOP-PLI5MTR\\SQLEXPRESS;Initial Catalog=TestDB; User ID=sa;Password=1234";
+        private string connString = "Data Source=DESKTOP-6GTHHB1\\SQLEXPRESS;Initial Catalog=TestDB; User ID=sa;Password=1234";
 
         private MemoryAppender memoryAppender;
 
@@ -671,92 +671,114 @@ namespace WindowsFormsApp1
         // Text -> DB datagridview 테이블 출력
         private void showDataGrid()
         {
-            DataTable dt = new DataTable();
-            using (SqlConnection connection = new SqlConnection(connString))
+            try
             {
-                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Execution");
-                connection.Open();
-                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
+                DataTable dt = new DataTable();
+                using (SqlConnection connection = new SqlConnection(connString))
+                {
+                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Execution");
+                    connection.Open();
+                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
-                string selectQuery = "SELECT * FROM userTBL";
+                    string selectQuery = "SELECT * FROM userTBL";
 
-                SqlCommand command = new SqlCommand(selectQuery, connection);
+                    SqlCommand command = new SqlCommand(selectQuery, connection);
 
-                SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
 
-                adapter.Fill(dt);
+                    adapter.Fill(dt);
+                }
+                dataGridView2.DataSource = dt;
             }
-            dataGridView2.DataSource = dt;
+            catch (Exception ex)
+            {
+                MessageBox.Show("오류 발생: " + ex.Message, "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
         }
 
         // 데이터베이스에 Text file 데이터를 삽입하는 메서드
         private void InsertDataIntoDatabase(List<string[]> InsertdataList)
-        {            
-            
-            using (SqlConnection connection = new SqlConnection(connString))
+        {
+            try
             {
-                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Execution");
-                connection.Open();
-                log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
-
-                string InsertQuery = "INSERT INTO userTBL (userID, name, birthYear, addr, mobile1, height) " +
-                                     "VALUES (@userID, @name, @birthYear, @addr, @mobile1, @height)";
-
-                SqlCommand command = new SqlCommand(InsertQuery, connection);
-
-                //파라미터 추가
-                foreach (var values in InsertdataList)
+                using (SqlConnection connection = new SqlConnection(connString))
                 {
-                    command.Parameters.AddWithValue("@userID", values[0]);
-                    command.Parameters.AddWithValue("@name", values[1]);
-                    command.Parameters.AddWithValue("@birthYear", int.Parse(values[2]));
-                    command.Parameters.AddWithValue("@addr", values[3]);
-                    command.Parameters.AddWithValue("@mobile1", values[4]);
-                    command.Parameters.AddWithValue("@height", int.Parse(values[5]));
+                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Execution");
+                    connection.Open();
+                    log.Info(MethodBase.GetCurrentMethod().Name + "DB Connection Success");
 
-                    // 쿼리 실행
-                    log.Info(MethodBase.GetCurrentMethod().Name + "DB ExecuteNonQuery");
-                    command.ExecuteNonQuery();
+                    string InsertQuery = "INSERT INTO userTBL (userID, name, birthYear, addr, mobile1, height) " +
+                                         "VALUES (@userID, @name, @birthYear, @addr, @mobile1, @height)";
+
+                    SqlCommand command = new SqlCommand(InsertQuery, connection);
+
+                    //파라미터 추가
+                    foreach (var values in InsertdataList)
+                    {
+                        command.Parameters.AddWithValue("@userID", values[0]);
+                        command.Parameters.AddWithValue("@name", values[1]);
+                        command.Parameters.AddWithValue("@birthYear", int.Parse(values[2]));
+                        command.Parameters.AddWithValue("@addr", values[3]);
+                        command.Parameters.AddWithValue("@mobile1", values[4]);
+                        command.Parameters.AddWithValue("@height", int.Parse(values[5]));
+
+                        // 쿼리 실행                        
+                        command.ExecuteNonQuery();
+                        
+                        //파라미터 초기화
+                        command.Parameters.Clear();
+                    }
                     log.Info(MethodBase.GetCurrentMethod().Name + "DB ExecuteNonQuery Success");
-
-                    //파라미터 초기화
-                    command.Parameters.Clear();
-                }                        
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("오류 발생: " + ex.Message, "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
         }
         // 로그 실시간 모니터링
         private void Print_log(object sender, EventArgs e)
         {
-            if (memoryAppender != null)
+            try
             {
-                var events = memoryAppender.GetEvents();
-                
-                StringBuilder logBuilder = new StringBuilder(textBox1.Text);
-
-                foreach (LoggingEvent loggingEvent in events)
+                if (memoryAppender != null)
                 {
-                    // 로그 이벤트를 logBuilder에 추가
-                    logBuilder.AppendLine(loggingEvent.RenderedMessage);
-                    Console.WriteLine(logBuilder.ToString());
-                    // logBuilder의 Line 수 확인
-                    string[] lines = logBuilder.ToString().Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-                    int lineCount = lines.Length;
+                    var events = memoryAppender.GetEvents();
 
-                    // textBox의 라인 수를 20으로 제한
-                    const int maxLines = 20;
-                    if (lineCount > maxLines)
+                    StringBuilder logBuilder = new StringBuilder(textBox1.Text);
+
+                    foreach (LoggingEvent loggingEvent in events)
                     {
-                        // logBuilder에서 초과하는 줄 수를 제거
-                        logBuilder = new StringBuilder(string.Join(Environment.NewLine, lines.Skip(lineCount - maxLines)));
-                    }
-                    
-                    // 로그 출력
-                    textBox1.Text = logBuilder.ToString();
-                }
+                        // 로그 이벤트를 logBuilder에 추가
+                        logBuilder.AppendLine(loggingEvent.TimeStamp +" [Thread : " +loggingEvent.ThreadName + "] " + loggingEvent.LoggerName + " " + loggingEvent.RenderedMessage);
+                        Console.WriteLine(logBuilder.ToString());
+                        // logBuilder의 Line 수 확인
+                        string[] lines = logBuilder.ToString().Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                        int lineCount = lines.Length;
 
-                // 로그 처리 후 메모리 로그 해제
-                memoryAppender.Clear();
+                        // textBox의 라인 수를 30으로 제한
+                        const int maxLines = 30;
+                        if (lineCount > maxLines)
+                        {
+                            // logBuilder에서 초과하는 줄 수를 제거
+                            logBuilder = new StringBuilder(string.Join(Environment.NewLine, lines.Skip(lineCount - maxLines)));
+                        }
+
+                        // 로그 출력
+                        textBox1.Text = logBuilder.ToString();
+                    }
+
+                    // 로그 처리 후 메모리 로그 해제
+                    memoryAppender.Clear();
+                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("오류 발생: " + ex.Message, "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
         }
         
 
@@ -772,11 +794,18 @@ namespace WindowsFormsApp1
         }
         private void autoExportDirectory_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-
-            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            try
             {
-                autoExportDirectoryTextBox.Text = folderBrowserDialog.SelectedPath;
+                FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    autoExportDirectoryTextBox.Text = folderBrowserDialog.SelectedPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("오류 발생: " + ex.Message, "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -829,7 +858,9 @@ namespace WindowsFormsApp1
         {
             try
             {
+                log.Info(MethodBase.GetCurrentMethod().Name + " create Json for setting");
                 createJson();
+                log.Info(MethodBase.GetCurrentMethod().Name + " modify log4net XML for setting location");
                 log4netModify();                
 
                 XmlConfigurator.Configure(new System.IO.FileInfo(@"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\log4net.config"));
@@ -851,27 +882,37 @@ namespace WindowsFormsApp1
         // 파일 추출 자동화 버튼
         private void AutoFileExportButton_Click(object sender, EventArgs e)
         {
-            // getTimer 값을 이용하여 타이머 설정
-            int interval = int.Parse(getTimer)* 60  * 1000; // 분 단위
-            if (!timer_batch.Enabled)
+            try
             {
-                timer_batch.Interval = interval;
-                timer_batch.Tick += (s, ev) => autoExporting();
-                timer_batch.Start();
-                MessageBox.Show("자동 추출 기능을 시작합니다.\n" +
-                    $"{getTimer} 분 간격");
-                autoExportingState.Text = "파일 추출 자동화 진행 중...";
-                autoExportingState.ForeColor = Color.Red;
+                // getTimer 값을 이용하여 타이머 설정
+                int interval = int.Parse(getTimer) * 60 * 1000; // 분 단위
+                int count = 1; // 자동화 순번
+                if (!timer_batch.Enabled)
+                {
+                    timer_batch.Interval = interval;
+                    timer_batch.Tick += (s, ev) => autoExporting(count++);
+                    timer_batch.Start();
+                    MessageBox.Show("자동 추출 기능을 시작합니다.\n" +
+                        $"{getTimer} 분 간격");
+                    autoExportingState.Text = "파일 추출 자동화 진행 중...";
+                    autoExportingState.ForeColor = Color.Red;
+                }
+                else
+                {
+                    MessageBox.Show("이미 자동 추출을 진행 중 입니다.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("이미 자동 추출을 진행 중 입니다.");
+                MessageBox.Show("오류 발생: " + ex.Message, "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            
         }
 
         
-        private void autoExporting()
-        {            
+        private void autoExporting(int count)
+        {
+            
             try
             {
                 DateTime currentDateTime = DateTime.Now;
@@ -887,22 +928,21 @@ namespace WindowsFormsApp1
                 string milli = currentDateTime.ToString("FFF");
                 
                 string filePathString = $"{year}-{month}-{day}-{hour}-{minute}-{second}-{milli}.txt";
-                string fullFilePath = Path.Combine(dir, filePathString);
-
-                                  
+                string fullFilePath = Path.Combine(dir, filePathString);                
 
                 // 데이터베이스 연결 및 데이터 추출
                 using (SqlConnection connection = new SqlConnection(connString))
                 {
-                    log.Info(MethodBase.GetCurrentMethod().Name + " DB Connection Execution");
+                    
+                    log.Info(MethodBase.GetCurrentMethod().Name + $"[{count}] DB Connection Execution");
                     connection.Open();
-                    log.Info(MethodBase.GetCurrentMethod().Name + " DB Connection Success");
+                    log.Info(MethodBase.GetCurrentMethod().Name + $"[{count}] DB Connection Success");
 
                     SqlCommand cmd = new SqlCommand();
                     string viewQuery = "SELECT * FROM userTBL;";
                     cmd.Connection = connection;
                     cmd.CommandText = viewQuery;
-                    log.Info(MethodBase.GetCurrentMethod().Name + " DB to Text Execution");
+                    log.Info(MethodBase.GetCurrentMethod().Name + $"[{count}] DB to Text Export Execution");
 
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -914,18 +954,17 @@ namespace WindowsFormsApp1
                                 sb.Append(reader[i].ToString() + "\t"); // 각 컬럼을 \t 구분자와 함께 StringBuilder에 추가
                             }
                             sb.AppendLine();
-                        }
-                        Console.WriteLine(sb.ToString());
-                        log.Info(MethodBase.GetCurrentMethod().Name + " DB to Text Success");
+                        }                                                
 
                         // 파일에 데이터 쓰기 (이어쓰기 없음)
                         using (StreamWriter writer = new StreamWriter(fullFilePath, false))
-                        {
+                        {                            
                             writer.Write(sb.ToString());
+                            log.Info(MethodBase.GetCurrentMethod().Name + $"[{count}] DB to Text Export Success");                            
                         }
                     }
                 }
-
+                
             }
             catch (Exception ex)
             {
@@ -934,36 +973,53 @@ namespace WindowsFormsApp1
             }
             finally
             {
-
             }
-            log.Debug(MethodBase.GetCurrentMethod().Name + "() End");
+            log.Debug(MethodBase.GetCurrentMethod().Name + $"() [{count}] End");
         }
 
         private void autoExportingStopButton_Click(object sender, EventArgs e)
         {
-            timer_batch.Stop();
-            MessageBox.Show("자동 추출 기능이 종료되었습니다.");
-            autoExportingState.Text = "파일 추출 자동화 꺼짐";
-            autoExportingState.ForeColor = Color.DarkCyan;
+            try
+            {
+                timer_batch.Stop();
+                log.Info(MethodBase.GetCurrentMethod().Name + " autoExporting Stop!");
+                MessageBox.Show("자동 추출 기능이 종료되었습니다.");
+                autoExportingState.Text = "파일 추출 자동화 꺼짐";
+                autoExportingState.ForeColor = Color.DarkCyan;
+            }
+            catch(Exception ex)
+            {
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
+                MessageBox.Show(ex.ToString(), "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }            
         }
 
         private void log4netModify()
         {
-            XmlDocument doc = new XmlDocument();
+            try
+            {
+                XmlDocument doc = new XmlDocument();
 
-            // XML file 위치
-            doc.Load(@"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\log4net.config");
-            XmlNode root = doc.DocumentElement;
-            XmlNode subNode1 = root.SelectSingleNode("log4net");
-            XmlNode subNode2 = subNode1.SelectSingleNode("appender");
-            XmlNode nodeForModify = subNode2.SelectSingleNode("file");
+                // XML file 위치
+                doc.Load(@"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\log4net.config");
+                XmlNode root = doc.DocumentElement;
+                XmlNode subNode1 = root.SelectSingleNode("log4net");
+                XmlNode subNode2 = subNode1.SelectSingleNode("appender");
+                XmlNode nodeForModify = subNode2.SelectSingleNode("file");
 
-            // 파일 경로 수정
-            loadJson();
-            nodeForModify.Attributes[0].Value = getLogFileDirectory;
+                // 파일 경로 수정
+                loadJson();
+                nodeForModify.Attributes[0].Value = getLogFileDirectory;
 
-            // XML 저장
-            doc.Save(@"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\log4net.config");
+                // XML 저장
+                doc.Save(@"C:\Users\조형욱\source\repos\Solution1\WindowsFormsApp1\log4net.config");
+            }
+            catch (Exception ex)
+            {
+                log.Error(MethodBase.GetCurrentMethod().Name + "() - " + ex.Message);
+                MessageBox.Show(ex.ToString(), "에러!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            
         }
     }
 }

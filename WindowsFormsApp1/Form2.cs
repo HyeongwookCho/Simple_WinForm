@@ -15,7 +15,7 @@ namespace WindowsFormsApp1
 {
     public partial class Form2 : Form
     {
-        private string connString = "Data Source=DESKTOP-PLI5MTR\\SQLEXPRESS;Initial Catalog=TestDB;User ID=sa;Password=1234";
+        private string connString = "Data Source=DESKTOP-6GTHHB1\\SQLEXPRESS;Initial Catalog=TestDB;User ID=sa;Password=1234";
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public Form2()
